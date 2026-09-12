@@ -11,11 +11,11 @@ Thank you for taking the time to improve Tetragon's documentation.
 All the Tetragon documentation content can be found under
 [github.com/cilium/tetragon/docs/content/en/docs](https://github.com/cilium/tetragon/tree/main/docs/content/en/docs).
 
-{{< note >}}
+:::note
 The main page served from a directory path is named `_index.md`. For example
-[/docs/contribution-guide]({{< ref "/docs/contribution-guide" >}}) is available
+[/docs/contribution-guide](/docs/docs/contribution-guide/development-setup) is available
 under [/docs/content/en/docs/contribution-guide/\_index.md](https://github.com/cilium/tetragon/blob/main/docs/content/en/docs/contribution-guide/_index.md).
-{{< /note >}}
+:::
 
 ## Style to follow
 
@@ -28,12 +28,12 @@ To preview the documentation locally, use one of the method below. Then browse
 to [localhost:1313/docs](http://localhost:1313/docs), the default port used by Hugo to
 listen.
 
-{{< note >}}
+:::note
 When submitting a docs related pull request, a Netlify job will automatically
 build a preview of your changes and post the link in a PR comment, it is often
 a good idea to edit your initial PR message and link to the precise location
 of your changes within the preview to help the reviewer's job.
-{{< /note >}}
+:::
 
 ### Using Docker
 

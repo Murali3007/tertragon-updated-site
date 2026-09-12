@@ -6,10 +6,6 @@ description: >
 weight: 3
 ---
 
-{{< comment >}}
-This page was generated with github.io/cilium/tetragon/api/export-doc.sh,
-please do not edit directly.
-{{< /comment >}}
 
 The Tetragon API is an independant Go module that can be found in the Tetragon
 repository under [api](https://github.com/cilium/tetragon/tree/main/api). The
@@ -196,9 +192,9 @@ Reasons of why the process privileges changed.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| max_size | [int32](#int32) |  |  |
-| rotation_interval | [string](#string) |  |  |
-| max_backups | [int32](#int32) |  |  |
+| max_size | int32 |  |  |
+| rotation_interval | string |  |  |
+| max_backups | int32 |  |  |
 
 <a name="tetragon-SetEventLogParamsRequest"></a>
 
@@ -206,9 +202,9 @@ Reasons of why the process privileges changed.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| max_size | [int32](#int32) | optional |  |
-| rotation_interval | [string](#string) | optional |  |
-| max_backups | [int32](#int32) | optional |  |
+| max_size | int32 | optional |  |
+| rotation_interval | string | optional |  |
+| max_backups | int32 | optional |  |
 
 <a name="tetragon-SetEventLogParamsResponse"></a>
 
@@ -220,8 +216,8 @@ Reasons of why the process privileges changed.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| SetEventLogParams | [SetEventLogParamsRequest](#tetragon-SetEventLogParamsRequest) | [SetEventLogParamsResponse](#tetragon-SetEventLogParamsResponse) |  |
-| GetEventLogParams | [GetEventLogParamsRequest](#tetragon-GetEventLogParamsRequest) | [GetEventLogParamsResponse](#tetragon-GetEventLogParamsResponse) |  |
+| SetEventLogParams | [SetEventLogParamsRequest](#seteventlogparamsrequest) | [SetEventLogParamsResponse](#seteventlogparamsresponse) |  |
+| GetEventLogParams | [GetEventLogParamsRequest](#geteventlogparamsrequest) | [GetEventLogParamsResponse](#geteventlogparamsresponse) |  |
 
 <a name="tetragon_tetragon-proto"></a>
 
@@ -233,10 +229,10 @@ Reasons of why the process privileges changed.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| setuid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | If set then this is the set user ID used for execution |
-| setgid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | If set then this is the set group ID used for execution |
-| privileges_changed | [ProcessPrivilegesChanged](#tetragon-ProcessPrivilegesChanged) | repeated | The reasons why this binary execution changed privileges. Usually this happens when the process executes a binary with the set-user-ID to root or file capability sets. The final granted privileges can be listed inside the `process_credentials` or capabilities fields part of of the `process` object. |
-| file | [FileProperties](#tetragon-FileProperties) |  | File properties in case the executed binary is: 1. An anonymous shared memory file https://man7.org/linux/man-pages/man7/shm_overview.7.html. 2. An anonymous file obtained with memfd API https://man7.org/linux/man-pages/man2/memfd_create.2.html. 3. Or it was deleted from the file system. |
+| setuid | google.protobuf.UInt32Value |  | If set then this is the set user ID used for execution |
+| setgid | google.protobuf.UInt32Value |  | If set then this is the set group ID used for execution |
+| privileges_changed | [ProcessPrivilegesChanged](#processprivilegeschanged) | repeated | The reasons why this binary execution changed privileges. Usually this happens when the process executes a binary with the set-user-ID to root or file capability sets. The final granted privileges can be listed inside the `process_credentials` or capabilities fields part of of the `process` object. |
+| file | [FileProperties](#fileproperties) |  | File properties in case the executed binary is: 1. An anonymous shared memory file https://man7.org/linux/man-pages/man7/shm_overview.7.html. 2. An anonymous file obtained with memfd API https://man7.org/linux/man-pages/man2/memfd_create.2.html. 3. Or it was deleted from the file system. |
 
 <a name="tetragon-Capabilities"></a>
 
@@ -244,9 +240,9 @@ Reasons of why the process privileges changed.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| permitted | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated | Permitted set indicates what capabilities the process can use. This is a limiting superset for the effective capabilities that the thread may assume. It is also a limiting superset for the capabilities that may be added to the inheritable set by a thread without the CAP_SETPCAP in its effective set. |
-| effective | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated | Effective set indicates what capabilities are active in a process. This is the set used by the kernel to perform permission checks for the thread. |
-| inheritable | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated | Inheritable set indicates which capabilities will be inherited by the current process when running as a root user. |
+| permitted | [CapabilitiesType](#capabilitiestype) | repeated | Permitted set indicates what capabilities the process can use. This is a limiting superset for the effective capabilities that the thread may assume. It is also a limiting superset for the capabilities that may be added to the inheritable set by a thread without the CAP_SETPCAP in its effective set. |
+| effective | [CapabilitiesType](#capabilitiestype) | repeated | Effective set indicates what capabilities are active in a process. This is the set used by the kernel to perform permission checks for the thread. |
+| inheritable | [CapabilitiesType](#capabilitiestype) | repeated | Inheritable set indicates which capabilities will be inherited by the current process when running as a root user. |
 
 <a name="tetragon-Container"></a>
 
@@ -254,13 +250,13 @@ Reasons of why the process privileges changed.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [string](#string) |  | Identifier of the container. |
-| name | [string](#string) |  | Name of the container. |
-| image | [Image](#tetragon-Image) |  | Image of the container. |
-| start_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | Start time of the container. |
-| pid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | Process identifier in the container namespace. |
-| maybe_exec_probe | [bool](#bool) |  | If this is set true, it means that the process might have been originated from a Kubernetes exec probe. For this field to be true, the following must be true: 1. The binary field matches the first element of the exec command list for either liveness or readiness probe excluding the basename. For example, &#34;/bin/ls&#34; and &#34;ls&#34; are considered a match. 2. The arguments field exactly matches the rest of the exec command list. |
-| security_context | [SecurityContext](#tetragon-SecurityContext) |  | The security context of the container |
+| id | string |  | Identifier of the container. |
+| name | string |  | Name of the container. |
+| image | [Image](#image) |  | Image of the container. |
+| start_time | google.protobuf.Timestamp |  | Start time of the container. |
+| pid | google.protobuf.UInt32Value |  | Process identifier in the container namespace. |
+| maybe_exec_probe | bool |  | If this is set true, it means that the process might have been originated from a Kubernetes exec probe. For this field to be true, the following must be true: 1. The binary field matches the first element of the exec command list for either liveness or readiness probe excluding the basename. For example, &#34;/bin/ls&#34; and &#34;ls&#34; are considered a match. 2. The arguments field exactly matches the rest of the exec command list. |
+| security_context | [SecurityContext](#securitycontext) |  | The security context of the container |
 
 <a name="tetragon-CreateContainer"></a>
 
@@ -276,16 +272,16 @@ found.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| cgroupsPath | [string](#string) |  | cgroupsPath is the cgroups path for the container. The path is expected to be relative to the cgroups mountpoint. See: https://github.com/opencontainers/runtime-spec/blob/58ec43f9fc39e0db229b653ae98295bfde74aeab/specs-go/config.go#L174 |
-| rootDir | [string](#string) |  | rootDir is the absolute path of the root directory of the container. See: https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L174 |
-| annotations | [CreateContainer.AnnotationsEntry](#tetragon-CreateContainer-AnnotationsEntry) | repeated | annotations are the run-time annotations for the container see https://github.com/opencontainers/runtime-spec/blob/main/config.md#annotations |
-| containerName | [string](#string) |  | containerName is the name of the container |
-| containerID | [string](#string) |  | containerID is the id of the container |
-| podName | [string](#string) |  | podName is the pod name |
-| podUID | [string](#string) |  | podUID is the pod uid |
-| podNamespace | [string](#string) |  | podNamespace is the namespace of the pod |
-| containerImage | [string](#string) |  | containerImage is the full image location (repo &#43; image) |
-| mounts | [Mount](#tetragon-Mount) | repeated | Mounts configures additional mounts (on top of Root). |
+| cgroupsPath | string |  | cgroupsPath is the cgroups path for the container. The path is expected to be relative to the cgroups mountpoint. See: https://github.com/opencontainers/runtime-spec/blob/58ec43f9fc39e0db229b653ae98295bfde74aeab/specs-go/config.go#L174 |
+| rootDir | string |  | rootDir is the absolute path of the root directory of the container. See: https://github.com/opencontainers/runtime-spec/blob/main/specs-go/config.go#L174 |
+| annotations | [CreateContainer.AnnotationsEntry](#createcontainerannotationsentry) | repeated | annotations are the run-time annotations for the container see https://github.com/opencontainers/runtime-spec/blob/main/config.md#annotations |
+| containerName | string |  | containerName is the name of the container |
+| containerID | string |  | containerID is the id of the container |
+| podName | string |  | podName is the pod name |
+| podUID | string |  | podUID is the pod uid |
+| podNamespace | string |  | podNamespace is the namespace of the pod |
+| containerImage | string |  | containerImage is the full image location (repo &#43; image) |
+| mounts | [Mount](#mount) | repeated | Mounts configures additional mounts (on top of Root). |
 
 <a name="tetragon-CreateContainer-AnnotationsEntry"></a>
 
@@ -293,8 +289,8 @@ found.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [string](#string) |  |  |
+| key | string |  |  |
+| value | string |  |  |
 
 <a name="tetragon-EnvVar"></a>
 
@@ -303,8 +299,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Key | [string](#string) |  |  |
-| Value | [string](#string) |  |  |
+| Key | string |  |  |
+| Value | string |  |  |
 
 <a name="tetragon-FileProperties"></a>
 
@@ -312,8 +308,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| inode | [InodeProperties](#tetragon-InodeProperties) |  | Inode of the file |
-| path | [string](#string) |  | Path of the file |
+| inode | [InodeProperties](#inodeproperties) |  | Inode of the file |
+| path | string |  | Path of the file |
 
 <a name="tetragon-GetHealthStatusRequest"></a>
 
@@ -321,7 +317,7 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| event_set | [HealthStatusType](#tetragon-HealthStatusType) | repeated |  |
+| event_set | [HealthStatusType](#healthstatustype) | repeated |  |
 
 <a name="tetragon-GetHealthStatusResponse"></a>
 
@@ -329,7 +325,7 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| health_status | [HealthStatus](#tetragon-HealthStatus) | repeated |  |
+| health_status | [HealthStatus](#healthstatus) | repeated |  |
 
 <a name="tetragon-HealthStatus"></a>
 
@@ -337,9 +333,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| event | [HealthStatusType](#tetragon-HealthStatusType) |  |  |
-| status | [HealthStatusResult](#tetragon-HealthStatusResult) |  |  |
-| details | [string](#string) |  |  |
+| event | [HealthStatusType](#healthstatustype) |  |  |
+| status | [HealthStatusResult](#healthstatusresult) |  |  |
+| details | string |  |  |
 
 <a name="tetragon-Image"></a>
 
@@ -347,8 +343,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [string](#string) |  | Identifier of the container image composed of the registry path and the sha256. |
-| name | [string](#string) |  | Name of the container image composed of the registry path and the tag. |
+| id | string |  | Identifier of the container image composed of the registry path and the sha256. |
+| name | string |  | Name of the container image composed of the registry path and the tag. |
 
 <a name="tetragon-InodeProperties"></a>
 
@@ -356,8 +352,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| number | [uint64](#uint64) |  | The inode number |
-| links | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The inode links on the file system. If zero means the file is only in memory |
+| number | uint64 |  | The inode number |
+| links | google.protobuf.UInt32Value |  | The inode links on the file system. If zero means the file is only in memory |
 
 <a name="tetragon-KernelModule"></a>
 
@@ -365,9 +361,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Kernel module name |
-| signature_ok | [google.protobuf.BoolValue](#google-protobuf-BoolValue) |  | If true the module signature was verified successfully. Depends on kernels compiled with CONFIG_MODULE_SIG option, for details please read: https://www.kernel.org/doc/Documentation/admin-guide/module-signing.rst |
-| tainted | [TaintedBitsType](#tetragon-TaintedBitsType) | repeated | The module tainted flags that will be applied on the kernel. For further details please read: https://docs.kernel.org/admin-guide/tainted-kernels.html |
+| name | string |  | Kernel module name |
+| signature_ok | google.protobuf.BoolValue |  | If true the module signature was verified successfully. Depends on kernels compiled with CONFIG_MODULE_SIG option, for details please read: https://www.kernel.org/doc/Documentation/admin-guide/module-signing.rst |
+| tainted | [TaintedBitsType](#taintedbitstype) | repeated | The module tainted flags that will be applied on the kernel. For further details please read: https://docs.kernel.org/admin-guide/tainted-kernels.html |
 
 <a name="tetragon-KprobeArgument"></a>
 
@@ -375,39 +371,39 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| string_arg | [string](#string) |  |  |
-| int_arg | [int32](#int32) |  |  |
-| skb_arg | [KprobeSkb](#tetragon-KprobeSkb) |  |  |
-| size_arg | [uint64](#uint64) |  |  |
-| bytes_arg | [bytes](#bytes) |  |  |
-| path_arg | [KprobePath](#tetragon-KprobePath) |  |  |
-| file_arg | [KprobeFile](#tetragon-KprobeFile) |  |  |
-| truncated_bytes_arg | [KprobeTruncatedBytes](#tetragon-KprobeTruncatedBytes) |  |  |
-| sock_arg | [KprobeSock](#tetragon-KprobeSock) |  |  |
-| cred_arg | [KprobeCred](#tetragon-KprobeCred) |  |  |
-| long_arg | [int64](#int64) |  |  |
-| bpf_attr_arg | [KprobeBpfAttr](#tetragon-KprobeBpfAttr) |  |  |
-| perf_event_arg | [KprobePerfEvent](#tetragon-KprobePerfEvent) |  |  |
-| bpf_map_arg | [KprobeBpfMap](#tetragon-KprobeBpfMap) |  |  |
-| uint_arg | [uint32](#uint32) |  |  |
-| user_namespace_arg | [KprobeUserNamespace](#tetragon-KprobeUserNamespace) |  | **Deprecated.**  |
-| capability_arg | [KprobeCapability](#tetragon-KprobeCapability) |  |  |
-| process_credentials_arg | [ProcessCredentials](#tetragon-ProcessCredentials) |  |  |
-| user_ns_arg | [UserNamespace](#tetragon-UserNamespace) |  |  |
-| module_arg | [KernelModule](#tetragon-KernelModule) |  |  |
-| kernel_cap_t_arg | [string](#string) |  | Capabilities in hexadecimal format. |
-| cap_inheritable_arg | [string](#string) |  | Capabilities inherited by a forked process in hexadecimal format. |
-| cap_permitted_arg | [string](#string) |  | Capabilities that are currently permitted in hexadecimal format. |
-| cap_effective_arg | [string](#string) |  | Capabilities that are actually used in hexadecimal format. |
-| linux_binprm_arg | [KprobeLinuxBinprm](#tetragon-KprobeLinuxBinprm) |  |  |
-| net_dev_arg | [KprobeNetDev](#tetragon-KprobeNetDev) |  |  |
-| bpf_cmd_arg | [BpfCmd](#tetragon-BpfCmd) |  |  |
-| syscall_id | [SyscallId](#tetragon-SyscallId) |  |  |
-| sockaddr_arg | [KprobeSockaddr](#tetragon-KprobeSockaddr) |  |  |
-| bpf_prog_arg | [KprobeBpfProg](#tetragon-KprobeBpfProg) |  |  |
-| error_arg | [KprobeError](#tetragon-KprobeError) |  |  |
-| sockaddrun_arg | [KprobeSockaddrUn](#tetragon-KprobeSockaddrUn) |  |  |
-| label | [string](#string) |  |  |
+| string_arg | string |  |  |
+| int_arg | int32 |  |  |
+| skb_arg | [KprobeSkb](#kprobeskb) |  |  |
+| size_arg | uint64 |  |  |
+| bytes_arg | bytes |  |  |
+| path_arg | [KprobePath](#kprobepath) |  |  |
+| file_arg | [KprobeFile](#kprobefile) |  |  |
+| truncated_bytes_arg | [KprobeTruncatedBytes](#kprobetruncatedbytes) |  |  |
+| sock_arg | [KprobeSock](#kprobesock) |  |  |
+| cred_arg | [KprobeCred](#kprobecred) |  |  |
+| long_arg | int64 |  |  |
+| bpf_attr_arg | [KprobeBpfAttr](#kprobebpfattr) |  |  |
+| perf_event_arg | [KprobePerfEvent](#kprobeperfevent) |  |  |
+| bpf_map_arg | [KprobeBpfMap](#kprobebpfmap) |  |  |
+| uint_arg | uint32 |  |  |
+| user_namespace_arg | [KprobeUserNamespace](#kprobeusernamespace) |  | **Deprecated.**  |
+| capability_arg | [KprobeCapability](#kprobecapability) |  |  |
+| process_credentials_arg | [ProcessCredentials](#processcredentials) |  |  |
+| user_ns_arg | [UserNamespace](#usernamespace) |  |  |
+| module_arg | [KernelModule](#kernelmodule) |  |  |
+| kernel_cap_t_arg | string |  | Capabilities in hexadecimal format. |
+| cap_inheritable_arg | string |  | Capabilities inherited by a forked process in hexadecimal format. |
+| cap_permitted_arg | string |  | Capabilities that are currently permitted in hexadecimal format. |
+| cap_effective_arg | string |  | Capabilities that are actually used in hexadecimal format. |
+| linux_binprm_arg | [KprobeLinuxBinprm](#kprobelinuxbinprm) |  |  |
+| net_dev_arg | [KprobeNetDev](#kprobenetdev) |  |  |
+| bpf_cmd_arg | [BpfCmd](#bpfcmd) |  |  |
+| syscall_id | [SyscallId](#syscallid) |  |  |
+| sockaddr_arg | [KprobeSockaddr](#kprobesockaddr) |  |  |
+| bpf_prog_arg | [KprobeBpfProg](#kprobebpfprog) |  |  |
+| error_arg | [KprobeError](#kprobeerror) |  |  |
+| sockaddrun_arg | [KprobeSockaddrUn](#kprobesockaddrun) |  |  |
+| label | string |  |  |
 
 <a name="tetragon-KprobeBpfAttr"></a>
 
@@ -415,9 +411,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ProgType | [string](#string) |  |  |
-| InsnCnt | [uint32](#uint32) |  |  |
-| ProgName | [string](#string) |  |  |
+| ProgType | string |  |  |
+| InsnCnt | uint32 |  |  |
+| ProgName | string |  |  |
 
 <a name="tetragon-KprobeBpfMap"></a>
 
@@ -425,11 +421,11 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| MapType | [string](#string) |  |  |
-| KeySize | [uint32](#uint32) |  |  |
-| ValueSize | [uint32](#uint32) |  |  |
-| MaxEntries | [uint32](#uint32) |  |  |
-| MapName | [string](#string) |  |  |
+| MapType | string |  |  |
+| KeySize | uint32 |  |  |
+| ValueSize | uint32 |  |  |
+| MaxEntries | uint32 |  |  |
+| MapName | string |  |  |
 
 <a name="tetragon-KprobeBpfProg"></a>
 
@@ -437,9 +433,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ProgType | [string](#string) |  |  |
-| InsnCnt | [uint32](#uint32) |  |  |
-| ProgName | [string](#string) |  |  |
+| ProgType | string |  |  |
+| InsnCnt | uint32 |  |  |
+| ProgName | string |  |  |
 
 <a name="tetragon-KprobeCapability"></a>
 
@@ -447,8 +443,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| value | [google.protobuf.Int32Value](#google-protobuf-Int32Value) |  |  |
-| name | [string](#string) |  |  |
+| value | google.protobuf.Int32Value |  |  |
+| name | string |  |  |
 
 <a name="tetragon-KprobeCred"></a>
 
@@ -456,9 +452,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| permitted | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated |  |
-| effective | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated |  |
-| inheritable | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated |  |
+| permitted | [CapabilitiesType](#capabilitiestype) | repeated |  |
+| effective | [CapabilitiesType](#capabilitiestype) | repeated |  |
+| inheritable | [CapabilitiesType](#capabilitiestype) | repeated |  |
 
 <a name="tetragon-KprobeError"></a>
 
@@ -466,7 +462,7 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Message | [string](#string) |  |  |
+| Message | string |  |  |
 
 <a name="tetragon-KprobeFile"></a>
 
@@ -474,10 +470,10 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| mount | [string](#string) |  |  |
-| path | [string](#string) |  |  |
-| flags | [string](#string) |  |  |
-| permission | [string](#string) |  |  |
+| mount | string |  |  |
+| path | string |  |  |
+| flags | string |  |  |
+| permission | string |  |  |
 
 <a name="tetragon-KprobeLinuxBinprm"></a>
 
@@ -485,9 +481,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [string](#string) |  |  |
-| flags | [string](#string) |  |  |
-| permission | [string](#string) |  |  |
+| path | string |  |  |
+| flags | string |  |  |
+| permission | string |  |  |
 
 <a name="tetragon-KprobeNetDev"></a>
 
@@ -495,7 +491,7 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
+| name | string |  |  |
 
 <a name="tetragon-KprobePath"></a>
 
@@ -503,10 +499,10 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| mount | [string](#string) |  |  |
-| path | [string](#string) |  |  |
-| flags | [string](#string) |  |  |
-| permission | [string](#string) |  |  |
+| mount | string |  |  |
+| path | string |  |  |
+| flags | string |  |  |
+| permission | string |  |  |
 
 <a name="tetragon-KprobePerfEvent"></a>
 
@@ -514,10 +510,10 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| KprobeFunc | [string](#string) |  |  |
-| Type | [string](#string) |  |  |
-| Config | [uint64](#uint64) |  |  |
-| ProbeOffset | [uint64](#uint64) |  |  |
+| KprobeFunc | string |  |  |
+| Type | string |  |  |
+| Config | uint64 |  |  |
+| ProbeOffset | uint64 |  |  |
 
 <a name="tetragon-KprobeSkb"></a>
 
@@ -525,19 +521,19 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [uint32](#uint32) |  |  |
-| len | [uint32](#uint32) |  |  |
-| priority | [uint32](#uint32) |  |  |
-| mark | [uint32](#uint32) |  |  |
-| saddr | [string](#string) |  |  |
-| daddr | [string](#string) |  |  |
-| sport | [uint32](#uint32) |  |  |
-| dport | [uint32](#uint32) |  |  |
-| proto | [uint32](#uint32) |  |  |
-| sec_path_len | [uint32](#uint32) |  |  |
-| sec_path_olen | [uint32](#uint32) |  |  |
-| protocol | [string](#string) |  |  |
-| family | [string](#string) |  |  |
+| hash | uint32 |  |  |
+| len | uint32 |  |  |
+| priority | uint32 |  |  |
+| mark | uint32 |  |  |
+| saddr | string |  |  |
+| daddr | string |  |  |
+| sport | uint32 |  |  |
+| dport | uint32 |  |  |
+| proto | uint32 |  |  |
+| sec_path_len | uint32 |  |  |
+| sec_path_olen | uint32 |  |  |
+| protocol | string |  |  |
+| family | string |  |  |
 
 <a name="tetragon-KprobeSock"></a>
 
@@ -545,17 +541,17 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| family | [string](#string) |  |  |
-| type | [string](#string) |  |  |
-| protocol | [string](#string) |  |  |
-| mark | [uint32](#uint32) |  |  |
-| priority | [uint32](#uint32) |  |  |
-| saddr | [string](#string) |  |  |
-| daddr | [string](#string) |  |  |
-| sport | [uint32](#uint32) |  |  |
-| dport | [uint32](#uint32) |  |  |
-| cookie | [uint64](#uint64) |  |  |
-| state | [string](#string) |  |  |
+| family | string |  |  |
+| type | string |  |  |
+| protocol | string |  |  |
+| mark | uint32 |  |  |
+| priority | uint32 |  |  |
+| saddr | string |  |  |
+| daddr | string |  |  |
+| sport | uint32 |  |  |
+| dport | uint32 |  |  |
+| cookie | uint64 |  |  |
+| state | string |  |  |
 
 <a name="tetragon-KprobeSockaddr"></a>
 
@@ -563,9 +559,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| family | [string](#string) |  |  |
-| addr | [string](#string) |  |  |
-| port | [uint32](#uint32) |  |  |
+| family | string |  |  |
+| addr | string |  |  |
+| port | uint32 |  |  |
 
 <a name="tetragon-KprobeSockaddrUn"></a>
 
@@ -573,8 +569,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| family | [string](#string) |  |  |
-| path | [string](#string) |  |  |
+| family | string |  |  |
+| path | string |  |  |
 
 <a name="tetragon-KprobeTruncatedBytes"></a>
 
@@ -582,8 +578,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| bytes_arg | [bytes](#bytes) |  |  |
-| orig_size | [uint64](#uint64) |  |  |
+| bytes_arg | bytes |  |  |
+| orig_size | uint64 |  |  |
 
 <a name="tetragon-KprobeUserNamespace"></a>
 
@@ -591,10 +587,10 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| level | [google.protobuf.Int32Value](#google-protobuf-Int32Value) |  |  |
-| owner | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  |  |
-| group | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  |  |
-| ns | [Namespace](#tetragon-Namespace) |  |  |
+| level | google.protobuf.Int32Value |  |  |
+| owner | google.protobuf.UInt32Value |  |  |
+| group | google.protobuf.UInt32Value |  |  |
+| ns | [Namespace](#namespace) |  |  |
 
 <a name="tetragon-Mount"></a>
 
@@ -602,10 +598,10 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| destination | [string](#string) |  | Destination is the absolute path where the mount will be placed in the container. |
-| type | [string](#string) |  | Type specifies the mount kind. |
-| source | [string](#string) |  | Source specifies the source path of the mount. |
-| options | [string](#string) | repeated | Options are fstab style mount options. |
+| destination | string |  | Destination is the absolute path where the mount will be placed in the container. |
+| type | string |  | Type specifies the mount kind. |
+| source | string |  | Source specifies the source path of the mount. |
+| options | string | repeated | Options are fstab style mount options. |
 
 <a name="tetragon-Namespace"></a>
 
@@ -613,8 +609,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| inum | [uint32](#uint32) |  | Inode number of the namespace. |
-| is_host | [bool](#bool) |  | Indicates if namespace belongs to host. |
+| inum | uint32 |  | Inode number of the namespace. |
+| is_host | bool |  | Indicates if namespace belongs to host. |
 
 <a name="tetragon-Namespaces"></a>
 
@@ -622,16 +618,16 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| uts | [Namespace](#tetragon-Namespace) |  | Hostname and NIS domain name. |
-| ipc | [Namespace](#tetragon-Namespace) |  | System V IPC, POSIX message queues. |
-| mnt | [Namespace](#tetragon-Namespace) |  | Mount points. |
-| pid | [Namespace](#tetragon-Namespace) |  | Process IDs. |
-| pid_for_children | [Namespace](#tetragon-Namespace) |  | Process IDs for children processes. |
-| net | [Namespace](#tetragon-Namespace) |  | Network devices, stacks, ports, etc. |
-| time | [Namespace](#tetragon-Namespace) |  | Boot and monotonic clocks. |
-| time_for_children | [Namespace](#tetragon-Namespace) |  | Boot and monotonic clocks for children processes. |
-| cgroup | [Namespace](#tetragon-Namespace) |  | Cgroup root directory. |
-| user | [Namespace](#tetragon-Namespace) |  | User and group IDs. |
+| uts | [Namespace](#namespace) |  | Hostname and NIS domain name. |
+| ipc | [Namespace](#namespace) |  | System V IPC, POSIX message queues. |
+| mnt | [Namespace](#namespace) |  | Mount points. |
+| pid | [Namespace](#namespace) |  | Process IDs. |
+| pid_for_children | [Namespace](#namespace) |  | Process IDs for children processes. |
+| net | [Namespace](#namespace) |  | Network devices, stacks, ports, etc. |
+| time | [Namespace](#namespace) |  | Boot and monotonic clocks. |
+| time_for_children | [Namespace](#namespace) |  | Boot and monotonic clocks for children processes. |
+| cgroup | [Namespace](#namespace) |  | Cgroup root directory. |
+| user | [Namespace](#namespace) |  | User and group IDs. |
 
 <a name="tetragon-Pod"></a>
 
@@ -639,14 +635,14 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| namespace | [string](#string) |  | Kubernetes namespace of the Pod. |
-| name | [string](#string) |  | Name of the Pod. |
-| uid | [string](#string) |  | UID of the Pod. |
-| container | [Container](#tetragon-Container) |  | Container of the Pod from which the process that triggered the event originates. |
-| pod_labels | [Pod.PodLabelsEntry](#tetragon-Pod-PodLabelsEntry) | repeated | Contains all the labels of the pod. |
-| workload | [string](#string) |  | Kubernetes workload of the Pod. |
-| workload_kind | [string](#string) |  | Kubernetes workload kind (e.g. &#34;Deployment&#34;, &#34;DaemonSet&#34;) of the Pod. |
-| pod_annotations | [Pod.PodAnnotationsEntry](#tetragon-Pod-PodAnnotationsEntry) | repeated | Contains all the annotations of the pod. |
+| namespace | string |  | Kubernetes namespace of the Pod. |
+| name | string |  | Name of the Pod. |
+| uid | string |  | UID of the Pod. |
+| container | [Container](#container) |  | Container of the Pod from which the process that triggered the event originates. |
+| pod_labels | [Pod.PodLabelsEntry](#podpodlabelsentry) | repeated | Contains all the labels of the pod. |
+| workload | string |  | Kubernetes workload of the Pod. |
+| workload_kind | string |  | Kubernetes workload kind (e.g. &#34;Deployment&#34;, &#34;DaemonSet&#34;) of the Pod. |
+| pod_annotations | [Pod.PodAnnotationsEntry](#podpodannotationsentry) | repeated | Contains all the annotations of the pod. |
 
 <a name="tetragon-Pod-PodAnnotationsEntry"></a>
 
@@ -654,8 +650,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [string](#string) |  |  |
+| key | string |  |  |
+| value | string |  |  |
 
 <a name="tetragon-Pod-PodLabelsEntry"></a>
 
@@ -663,8 +659,8 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [string](#string) |  |  |
+| key | string |  |  |
+| value | string |  |  |
 
 <a name="tetragon-Process"></a>
 
@@ -672,27 +668,27 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| exec_id | [string](#string) |  | Exec ID uniquely identifies the process over time across all the nodes in the cluster. |
-| pid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | Process identifier from host PID namespace. |
-| uid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The effective User identifier used for permission checks. This field maps to the &#39;ProcessCredentials.euid&#39; field. Run with the `--enable-process-cred` flag to enable &#39;ProcessCredentials&#39; and get all the User and Group identifiers. |
-| cwd | [string](#string) |  | Current working directory of the process. |
-| binary | [string](#string) |  | Absolute path of the executed binary. |
-| arguments | [string](#string) |  | Arguments passed to the binary at execution. |
-| flags | [string](#string) |  | Flags are for debugging purposes only and should not be considered a reliable source of information. They hold various information about which syscalls generated events, use of internal Tetragon buffers, errors and more. - `execve` This event is generated by an execve syscall for a new process. See procFs for the other option. A correctly formatted event should either set execve or procFS (described next). - `procFS` This event is generated from a proc interface. This happens at Tetragon init when existing processes are being loaded into Tetragon event buffer. All events should have either execve or procFS set. - `truncFilename` Indicates a truncated processes filename because the buffer size is too small to contain the process filename. Consider increasing buffer size to avoid this. - `truncArgs` Indicates truncated the processes arguments because the buffer size was too small to contain all exec args. Consider increasing buffer size to avoid this. - `taskWalk` Primarily useful for debugging. Indicates a walked process hierarchy to find a parent process in the Tetragon buffer. This may happen when we did not receive an exec event for the immediate parent of a process. Typically means we are looking at a fork that in turn did another fork we don&#39;t currently track fork events exactly and instead push an event with the original parent exec data. This flag can provide this insight into the event if needed. - `miss` An error flag indicating we could not find parent info in the Tetragon event buffer. If this is set it should be reported to Tetragon developers for debugging. Tetragon will do its best to recover information about the process from available kernel data structures instead of using cached info in this case. However, args will not be available. - `needsAUID` An internal flag for Tetragon to indicate the audit has not yet been resolved. The BPF hooks look at this flag to determine if probing the audit system is necessary. - `errorFilename` An error flag indicating an error happened while reading the filename. If this is set it should be reported to Tetragon developers for debugging. - `errorArgs` An error flag indicating an error happened while reading the process args. If this is set it should be reported to Tetragon developers for debugging - `needsCWD` An internal flag for Tetragon to indicate the current working directory has not yet been resolved. The Tetragon hooks look at this flag to determine if probing the CWD is necessary. - `noCWDSupport` Indicates that CWD is removed from the event because the buffer size is too small. Consider increasing buffer size to avoid this. - `rootCWD` Indicates that CWD is the root directory. This is necessary to inform readers the CWD is not in the event buffer and is &#39;/&#39; instead. - `errorCWD` An error flag indicating an error occurred while reading the CWD of a process. If this is set it should be reported to Tetragon developers for debugging. - `clone` Indicates the process issued a clone before exec*. This is the general flow to exec* a new process, however its possible to replace the current process with a new process by doing an exec* without a clone. In this case the flag will be omitted and the same PID will be used by the kernel for both the old process and the newly exec&#39;d process. - `unknown` Indicates the process was not found in the process cache and contains just pid and start time. |
-| start_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | Start time of the execution. |
-| auid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | Audit user ID, this ID is assigned to a user upon login and is inherited by every process even when the user&#39;s identity changes. For example, by switching user accounts with su - john. |
-| pod | [Pod](#tetragon-Pod) |  | Information about the the Kubernetes Pod where the event originated. |
-| docker | [string](#string) |  | The 15 first digits of the container ID. |
-| parent_exec_id | [string](#string) |  | Exec ID of the parent process. |
-| refcnt | [uint32](#uint32) |  | Reference counter from the Tetragon process cache. |
-| cap | [Capabilities](#tetragon-Capabilities) |  | Set of capabilities that define the permissions the process can execute with. |
-| ns | [Namespaces](#tetragon-Namespaces) |  | Linux namespaces of the process, disabled by default, can be enabled by the `--enable-process-ns` flag. |
-| tid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | Thread ID, note that for the thread group leader, tid is equal to pid. |
-| process_credentials | [ProcessCredentials](#tetragon-ProcessCredentials) |  | Process credentials, disabled by default, can be enabled by the `--enable-process-cred` flag. |
-| binary_properties | [BinaryProperties](#tetragon-BinaryProperties) |  | Executed binary properties. This field is only available on ProcessExec events. |
-| user | [UserRecord](#tetragon-UserRecord) |  | UserRecord contains user information about the event. It is only supported when i) Tetragon is running as a systemd service or directly on the host, and ii) when the flag `--username-metadata` is set to &#34;unix&#34;. In this case, the information is retrieved from the traditional user database `/etc/passwd` and no name services lookups are performed. The resolution will only be attempted for processes in the host namespace. Note that this resolution happens in user-space, which means that mapping might have changed between the in-kernel BPF hook being executed and the username resolution. |
-| in_init_tree | [google.protobuf.BoolValue](#google-protobuf-BoolValue) |  | If set to true, this process is containerized and is a member of the process tree rooted at pid=1 in its PID namespace. This is useful if, for example, you wish to discern whether a process was spawned using a tool like nsenter or kubectl exec. |
-| environment_variables | [EnvVar](#tetragon-EnvVar) | repeated | Environment variables passed to the binary at execution. |
+| exec_id | string |  | Exec ID uniquely identifies the process over time across all the nodes in the cluster. |
+| pid | google.protobuf.UInt32Value |  | Process identifier from host PID namespace. |
+| uid | google.protobuf.UInt32Value |  | The effective User identifier used for permission checks. This field maps to the &#39;ProcessCredentials.euid&#39; field. Run with the `--enable-process-cred` flag to enable &#39;ProcessCredentials&#39; and get all the User and Group identifiers. |
+| cwd | string |  | Current working directory of the process. |
+| binary | string |  | Absolute path of the executed binary. |
+| arguments | string |  | Arguments passed to the binary at execution. |
+| flags | string |  | Flags are for debugging purposes only and should not be considered a reliable source of information. They hold various information about which syscalls generated events, use of internal Tetragon buffers, errors and more. - `execve` This event is generated by an execve syscall for a new process. See procFs for the other option. A correctly formatted event should either set execve or procFS (described next). - `procFS` This event is generated from a proc interface. This happens at Tetragon init when existing processes are being loaded into Tetragon event buffer. All events should have either execve or procFS set. - `truncFilename` Indicates a truncated processes filename because the buffer size is too small to contain the process filename. Consider increasing buffer size to avoid this. - `truncArgs` Indicates truncated the processes arguments because the buffer size was too small to contain all exec args. Consider increasing buffer size to avoid this. - `taskWalk` Primarily useful for debugging. Indicates a walked process hierarchy to find a parent process in the Tetragon buffer. This may happen when we did not receive an exec event for the immediate parent of a process. Typically means we are looking at a fork that in turn did another fork we don&#39;t currently track fork events exactly and instead push an event with the original parent exec data. This flag can provide this insight into the event if needed. - `miss` An error flag indicating we could not find parent info in the Tetragon event buffer. If this is set it should be reported to Tetragon developers for debugging. Tetragon will do its best to recover information about the process from available kernel data structures instead of using cached info in this case. However, args will not be available. - `needsAUID` An internal flag for Tetragon to indicate the audit has not yet been resolved. The BPF hooks look at this flag to determine if probing the audit system is necessary. - `errorFilename` An error flag indicating an error happened while reading the filename. If this is set it should be reported to Tetragon developers for debugging. - `errorArgs` An error flag indicating an error happened while reading the process args. If this is set it should be reported to Tetragon developers for debugging - `needsCWD` An internal flag for Tetragon to indicate the current working directory has not yet been resolved. The Tetragon hooks look at this flag to determine if probing the CWD is necessary. - `noCWDSupport` Indicates that CWD is removed from the event because the buffer size is too small. Consider increasing buffer size to avoid this. - `rootCWD` Indicates that CWD is the root directory. This is necessary to inform readers the CWD is not in the event buffer and is &#39;/&#39; instead. - `errorCWD` An error flag indicating an error occurred while reading the CWD of a process. If this is set it should be reported to Tetragon developers for debugging. - `clone` Indicates the process issued a clone before exec*. This is the general flow to exec* a new process, however its possible to replace the current process with a new process by doing an exec* without a clone. In this case the flag will be omitted and the same PID will be used by the kernel for both the old process and the newly exec&#39;d process. - `unknown` Indicates the process was not found in the process cache and contains just pid and start time. |
+| start_time | google.protobuf.Timestamp |  | Start time of the execution. |
+| auid | google.protobuf.UInt32Value |  | Audit user ID, this ID is assigned to a user upon login and is inherited by every process even when the user&#39;s identity changes. For example, by switching user accounts with su - john. |
+| pod | [Pod](#pod) |  | Information about the the Kubernetes Pod where the event originated. |
+| docker | string |  | The 15 first digits of the container ID. |
+| parent_exec_id | string |  | Exec ID of the parent process. |
+| refcnt | uint32 |  | Reference counter from the Tetragon process cache. |
+| cap | [Capabilities](#capabilities) |  | Set of capabilities that define the permissions the process can execute with. |
+| ns | [Namespaces](#namespaces) |  | Linux namespaces of the process, disabled by default, can be enabled by the `--enable-process-ns` flag. |
+| tid | google.protobuf.UInt32Value |  | Thread ID, note that for the thread group leader, tid is equal to pid. |
+| process_credentials | [ProcessCredentials](#processcredentials) |  | Process credentials, disabled by default, can be enabled by the `--enable-process-cred` flag. |
+| binary_properties | [BinaryProperties](#binaryproperties) |  | Executed binary properties. This field is only available on ProcessExec events. |
+| user | [UserRecord](#userrecord) |  | UserRecord contains user information about the event. It is only supported when i) Tetragon is running as a systemd service or directly on the host, and ii) when the flag `--username-metadata` is set to &#34;unix&#34;. In this case, the information is retrieved from the traditional user database `/etc/passwd` and no name services lookups are performed. The resolution will only be attempted for processes in the host namespace. Note that this resolution happens in user-space, which means that mapping might have changed between the in-kernel BPF hook being executed and the username resolution. |
+| in_init_tree | google.protobuf.BoolValue |  | If set to true, this process is containerized and is a member of the process tree rooted at pid=1 in its PID namespace. This is useful if, for example, you wish to discern whether a process was spawned using a tool like nsenter or kubectl exec. |
+| environment_variables | [EnvVar](#envvar) | repeated | Environment variables passed to the binary at execution. |
 
 <a name="tetragon-ProcessCredentials"></a>
 
@@ -700,17 +696,17 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| uid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The real user ID of the process&#39; owner. |
-| gid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The real group ID of the process&#39; owner. |
-| euid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The effective user ID used for permission checks. |
-| egid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The effective group ID used for permission checks. |
-| suid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The saved user ID. |
-| sgid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The saved group ID. |
-| fsuid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | the filesystem user ID used for filesystem access checks. Usually equals the euid. |
-| fsgid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The filesystem group ID used for filesystem access checks. Usually equals the egid. |
-| securebits | [SecureBitsType](#tetragon-SecureBitsType) | repeated | Secure management flags |
-| caps | [Capabilities](#tetragon-Capabilities) |  | Set of capabilities that define the permissions the process can execute with. |
-| user_ns | [UserNamespace](#tetragon-UserNamespace) |  | User namespace where the UIDs, GIDs and capabilities are relative to. |
+| uid | google.protobuf.UInt32Value |  | The real user ID of the process&#39; owner. |
+| gid | google.protobuf.UInt32Value |  | The real group ID of the process&#39; owner. |
+| euid | google.protobuf.UInt32Value |  | The effective user ID used for permission checks. |
+| egid | google.protobuf.UInt32Value |  | The effective group ID used for permission checks. |
+| suid | google.protobuf.UInt32Value |  | The saved user ID. |
+| sgid | google.protobuf.UInt32Value |  | The saved group ID. |
+| fsuid | google.protobuf.UInt32Value |  | the filesystem user ID used for filesystem access checks. Usually equals the euid. |
+| fsgid | google.protobuf.UInt32Value |  | The filesystem group ID used for filesystem access checks. Usually equals the egid. |
+| securebits | [SecureBitsType](#securebitstype) | repeated | Secure management flags |
+| caps | [Capabilities](#capabilities) |  | Set of capabilities that define the permissions the process can execute with. |
+| user_ns | [UserNamespace](#usernamespace) |  | User namespace where the UIDs, GIDs and capabilities are relative to. |
 
 <a name="tetragon-ProcessExec"></a>
 
@@ -718,9 +714,9 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  | Process that triggered the exec. |
-| parent | [Process](#tetragon-Process) |  | Immediate parent of the process. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
+| process | [Process](#process) |  | Process that triggered the exec. |
+| parent | [Process](#process) |  | Immediate parent of the process. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
 
 <a name="tetragon-ProcessExit"></a>
 
@@ -728,12 +724,12 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  | Process that triggered the exit. |
-| parent | [Process](#tetragon-Process) |  | Immediate parent of the process. |
-| signal | [string](#string) |  | Signal that the process received when it exited, for example SIGKILL or SIGTERM (list all signal names with `kill -l`). If there is no signal handler implemented for a specific process, we report the exit status code that can be found in the status field. |
-| status | [uint32](#uint32) |  | Status code on process exit. For example, the status code can indicate if an error was encountered or the program exited successfully. |
-| time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | Date and time of the event. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
+| process | [Process](#process) |  | Process that triggered the exit. |
+| parent | [Process](#process) |  | Immediate parent of the process. |
+| signal | string |  | Signal that the process received when it exited, for example SIGKILL or SIGTERM (list all signal names with `kill -l`). If there is no signal handler implemented for a specific process, we report the exit status code that can be found in the status field. |
+| status | uint32 |  | Status code on process exit. For example, the status code can indicate if an error was encountered or the program exited successfully. |
+| time | google.protobuf.Timestamp |  | Date and time of the event. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
 
 <a name="tetragon-ProcessKprobe"></a>
 
@@ -741,20 +737,20 @@ Environment variable
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  | Process that triggered the kprobe. |
-| parent | [Process](#tetragon-Process) |  | Immediate parent of the process. |
-| function_name | [string](#string) |  | Symbol on which the kprobe was attached. |
-| args | [KprobeArgument](#tetragon-KprobeArgument) | repeated | Arguments definition of the observed kprobe. |
-| return | [KprobeArgument](#tetragon-KprobeArgument) |  | Return value definition of the observed kprobe. |
-| action | [KprobeAction](#tetragon-KprobeAction) |  | Action performed when the kprobe matched. |
-| kernel_stack_trace | [StackTraceEntry](#tetragon-StackTraceEntry) | repeated | Kernel stack trace to the call. |
-| policy_name | [string](#string) |  | Name of the Tracing Policy that created that kprobe. |
-| return_action | [KprobeAction](#tetragon-KprobeAction) |  | Action performed when the return kprobe executed. |
-| message | [string](#string) |  | Short message of the Tracing Policy to inform users what is going on. |
-| tags | [string](#string) | repeated | Tags of the Tracing Policy to categorize the event. |
-| user_stack_trace | [StackTraceEntry](#tetragon-StackTraceEntry) | repeated | User-mode stack trace to the call. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
-| data | [KprobeArgument](#tetragon-KprobeArgument) | repeated | Data definition of the observed kprobe. |
+| process | [Process](#process) |  | Process that triggered the kprobe. |
+| parent | [Process](#process) |  | Immediate parent of the process. |
+| function_name | string |  | Symbol on which the kprobe was attached. |
+| args | [KprobeArgument](#kprobeargument) | repeated | Arguments definition of the observed kprobe. |
+| return | [KprobeArgument](#kprobeargument) |  | Return value definition of the observed kprobe. |
+| action | [KprobeAction](#kprobeaction) |  | Action performed when the kprobe matched. |
+| kernel_stack_trace | [StackTraceEntry](#stacktraceentry) | repeated | Kernel stack trace to the call. |
+| policy_name | string |  | Name of the Tracing Policy that created that kprobe. |
+| return_action | [KprobeAction](#kprobeaction) |  | Action performed when the return kprobe executed. |
+| message | string |  | Short message of the Tracing Policy to inform users what is going on. |
+| tags | string | repeated | Tags of the Tracing Policy to categorize the event. |
+| user_stack_trace | [StackTraceEntry](#stacktraceentry) | repeated | User-mode stack trace to the call. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
+| data | [KprobeArgument](#kprobeargument) | repeated | Data definition of the observed kprobe. |
 
 <a name="tetragon-ProcessLoader"></a>
 
@@ -763,11 +759,11 @@ loader sensor event triggered for loaded binary/library
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  | Process that triggered the loader. |
-| path | [string](#string) |  | File path that is being loaded. |
-| buildid | [bytes](#bytes) |  | Buildid of the file that is being loaded. |
-| parent | [Process](#tetragon-Process) |  | Immediate parent of the process. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
+| process | [Process](#process) |  | Process that triggered the loader. |
+| path | string |  | File path that is being loaded. |
+| buildid | bytes |  | Buildid of the file that is being loaded. |
+| parent | [Process](#process) |  | Immediate parent of the process. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
 
 <a name="tetragon-ProcessLsm"></a>
 
@@ -775,16 +771,16 @@ loader sensor event triggered for loaded binary/library
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  |  |
-| parent | [Process](#tetragon-Process) |  |  |
-| function_name | [string](#string) |  | LSM hook name. |
-| policy_name | [string](#string) |  | Name of the policy that created that LSM hook. |
-| message | [string](#string) |  | Short message of the Tracing Policy to inform users what is going on. |
-| args | [KprobeArgument](#tetragon-KprobeArgument) | repeated | Arguments definition of the observed LSM hook. |
-| action | [KprobeAction](#tetragon-KprobeAction) |  | Action performed when the LSM hook matched. |
-| tags | [string](#string) | repeated | Tags of the Tracing Policy to categorize the event. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
-| ima_hash | [string](#string) |  | IMA file hash. Format algorithm:value. |
+| process | [Process](#process) |  |  |
+| parent | [Process](#process) |  |  |
+| function_name | string |  | LSM hook name. |
+| policy_name | string |  | Name of the policy that created that LSM hook. |
+| message | string |  | Short message of the Tracing Policy to inform users what is going on. |
+| args | [KprobeArgument](#kprobeargument) | repeated | Arguments definition of the observed LSM hook. |
+| action | [KprobeAction](#kprobeaction) |  | Action performed when the LSM hook matched. |
+| tags | string | repeated | Tags of the Tracing Policy to categorize the event. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
+| ima_hash | string |  | IMA file hash. Format algorithm:value. |
 
 <a name="tetragon-ProcessTracepoint"></a>
 
@@ -792,16 +788,16 @@ loader sensor event triggered for loaded binary/library
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  | Process that triggered the tracepoint. |
-| parent | [Process](#tetragon-Process) |  | Immediate parent of the process. |
-| subsys | [string](#string) |  | Subsystem of the tracepoint. |
-| event | [string](#string) |  | Event of the subsystem. |
-| args | [KprobeArgument](#tetragon-KprobeArgument) | repeated | Arguments definition of the observed tracepoint. TODO: once we implement all we want, rename KprobeArgument to GenericArgument |
-| policy_name | [string](#string) |  | Name of the policy that created that tracepoint. |
-| action | [KprobeAction](#tetragon-KprobeAction) |  | Action performed when the tracepoint matched. |
-| message | [string](#string) |  | Short message of the Tracing Policy to inform users what is going on. |
-| tags | [string](#string) | repeated | Tags of the Tracing Policy to categorize the event. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
+| process | [Process](#process) |  | Process that triggered the tracepoint. |
+| parent | [Process](#process) |  | Immediate parent of the process. |
+| subsys | string |  | Subsystem of the tracepoint. |
+| event | string |  | Event of the subsystem. |
+| args | [KprobeArgument](#kprobeargument) | repeated | Arguments definition of the observed tracepoint. TODO: once we implement all we want, rename KprobeArgument to GenericArgument |
+| policy_name | string |  | Name of the policy that created that tracepoint. |
+| action | [KprobeAction](#kprobeaction) |  | Action performed when the tracepoint matched. |
+| message | string |  | Short message of the Tracing Policy to inform users what is going on. |
+| tags | string | repeated | Tags of the Tracing Policy to categorize the event. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
 
 <a name="tetragon-ProcessUprobe"></a>
 
@@ -809,19 +805,19 @@ loader sensor event triggered for loaded binary/library
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  |  |
-| parent | [Process](#tetragon-Process) |  |  |
-| path | [string](#string) |  |  |
-| symbol | [string](#string) |  |  |
-| policy_name | [string](#string) |  | Name of the policy that created that uprobe. |
-| message | [string](#string) |  | Short message of the Tracing Policy to inform users what is going on. |
-| args | [KprobeArgument](#tetragon-KprobeArgument) | repeated | Arguments definition of the observed uprobe. |
-| tags | [string](#string) | repeated | Tags of the Tracing Policy to categorize the event. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
-| offset | [uint64](#uint64) |  | uprobe offset (mutualy exclusive with symbol) |
-| ref_ctr_offset | [uint64](#uint64) |  | uprobe ref_ctr_offset |
-| action | [KprobeAction](#tetragon-KprobeAction) |  | Action performed when the uprobe hook matched. |
-| data | [KprobeArgument](#tetragon-KprobeArgument) | repeated | Data definition of the observed uprobe. |
+| process | [Process](#process) |  |  |
+| parent | [Process](#process) |  |  |
+| path | string |  |  |
+| symbol | string |  |  |
+| policy_name | string |  | Name of the policy that created that uprobe. |
+| message | string |  | Short message of the Tracing Policy to inform users what is going on. |
+| args | [KprobeArgument](#kprobeargument) | repeated | Arguments definition of the observed uprobe. |
+| tags | string | repeated | Tags of the Tracing Policy to categorize the event. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
+| offset | uint64 |  | uprobe offset (mutualy exclusive with symbol) |
+| ref_ctr_offset | uint64 |  | uprobe ref_ctr_offset |
+| action | [KprobeAction](#kprobeaction) |  | Action performed when the uprobe hook matched. |
+| data | [KprobeArgument](#kprobeargument) | repeated | Data definition of the observed uprobe. |
 
 <a name="tetragon-ProcessUsdt"></a>
 
@@ -829,18 +825,18 @@ loader sensor event triggered for loaded binary/library
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  |  |
-| parent | [Process](#tetragon-Process) |  |  |
-| path | [string](#string) |  |  |
-| provider | [string](#string) |  |  |
-| name | [string](#string) |  |  |
-| policy_name | [string](#string) |  | Name of the policy that created that uprobe. |
-| message | [string](#string) |  | Short message of the Tracing Policy to inform users what is going on. |
-| args | [KprobeArgument](#tetragon-KprobeArgument) | repeated | Arguments definition of the observed uprobe. |
-| tags | [string](#string) | repeated | Tags of the Tracing Policy to categorize the event. |
-| ancestors | [Process](#tetragon-Process) | repeated | Ancestors of the process beyond the immediate parent. |
-| action | [KprobeAction](#tetragon-KprobeAction) |  | Action performed when the USDT hook matched. |
-| flags | [string](#string) |  | Flags are for debugging purposes only and should not be considered a reliable source of information. |
+| process | [Process](#process) |  |  |
+| parent | [Process](#process) |  |  |
+| path | string |  |  |
+| provider | string |  |  |
+| name | string |  |  |
+| policy_name | string |  | Name of the policy that created that uprobe. |
+| message | string |  | Short message of the Tracing Policy to inform users what is going on. |
+| args | [KprobeArgument](#kprobeargument) | repeated | Arguments definition of the observed uprobe. |
+| tags | string | repeated | Tags of the Tracing Policy to categorize the event. |
+| ancestors | [Process](#process) | repeated | Ancestors of the process beyond the immediate parent. |
+| action | [KprobeAction](#kprobeaction) |  | Action performed when the USDT hook matched. |
+| flags | string |  | Flags are for debugging purposes only and should not be considered a reliable source of information. |
 
 <a name="tetragon-RuntimeHookRequest"></a>
 
@@ -849,7 +845,7 @@ RuntimeHookRequest synchronously propagates information to the agent about run-t
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| createContainer | [CreateContainer](#tetragon-CreateContainer) |  |  |
+| createContainer | [CreateContainer](#createcontainer) |  |  |
 
 <a name="tetragon-RuntimeHookResponse"></a>
 
@@ -861,7 +857,7 @@ RuntimeHookRequest synchronously propagates information to the agent about run-t
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| privileged | [bool](#bool) |  | True if this container is priviledged. |
+| privileged | bool |  | True if this container is priviledged. |
 
 <a name="tetragon-StackTraceEntry"></a>
 
@@ -869,10 +865,10 @@ RuntimeHookRequest synchronously propagates information to the agent about run-t
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| address | [uint64](#uint64) |  | linear address of the function in kernel or user space. |
-| offset | [uint64](#uint64) |  | offset is the offset into the native instructions for the function. |
-| symbol | [string](#string) |  | symbol is the symbol name of the function. |
-| module | [string](#string) |  | module path for user space addresses. |
+| address | uint64 |  | linear address of the function in kernel or user space. |
+| offset | uint64 |  | offset is the offset into the native instructions for the function. |
+| symbol | string |  | symbol is the symbol name of the function. |
+| module | string |  | module path for user space addresses. |
 
 <a name="tetragon-SyscallId"></a>
 
@@ -880,8 +876,8 @@ RuntimeHookRequest synchronously propagates information to the agent about run-t
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [uint32](#uint32) |  |  |
-| abi | [string](#string) |  |  |
+| id | uint32 |  |  |
+| abi | string |  |  |
 
 <a name="tetragon-Test"></a>
 
@@ -889,10 +885,10 @@ RuntimeHookRequest synchronously propagates information to the agent about run-t
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| arg0 | [uint64](#uint64) |  |  |
-| arg1 | [uint64](#uint64) |  |  |
-| arg2 | [uint64](#uint64) |  |  |
-| arg3 | [uint64](#uint64) |  |  |
+| arg0 | uint64 |  |  |
+| arg1 | uint64 |  |  |
+| arg2 | uint64 |  |  |
+| arg3 | uint64 |  |  |
 
 <a name="tetragon-UserNamespace"></a>
 
@@ -900,10 +896,10 @@ RuntimeHookRequest synchronously propagates information to the agent about run-t
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| level | [google.protobuf.Int32Value](#google-protobuf-Int32Value) |  | Nested level of the user namespace. Init or host user namespace is at level 0. |
-| uid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The owner user ID of the namespace |
-| gid | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | The owner group ID of the namepace. |
-| ns | [Namespace](#tetragon-Namespace) |  | The user namespace details that include the inode number of the namespace. |
+| level | google.protobuf.Int32Value |  | Nested level of the user namespace. Init or host user namespace is at level 0. |
+| uid | google.protobuf.UInt32Value |  | The owner user ID of the namespace |
+| gid | google.protobuf.UInt32Value |  | The owner group ID of the namepace. |
+| ns | [Namespace](#namespace) |  | The user namespace details that include the inode number of the namespace. |
 
 <a name="tetragon-UserRecord"></a>
 
@@ -912,7 +908,7 @@ User records
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The UNIX username for this record. Corresponds to `pw_name` field of [struct passwd](https://man7.org/linux/man-pages/man3/getpwnam.3.html) and the `sp_namp` field of [struct spwd](https://man7.org/linux/man-pages/man3/getspnam.3.html). |
+| name | string |  | The UNIX username for this record. Corresponds to `pw_name` field of [struct passwd](https://man7.org/linux/man-pages/man3/getpwnam.3.html) and the `sp_namp` field of [struct spwd](https://man7.org/linux/man-pages/man3/getspnam.3.html). |
 
 <a name="tetragon-HealthStatusResult"></a>
 
@@ -985,7 +981,7 @@ AggregationInfo contains information about aggregation results.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| count | [uint64](#uint64) |  | Total count of events in this aggregation time window. |
+| count | uint64 |  | Total count of events in this aggregation time window. |
 
 <a name="tetragon-AggregationOptions"></a>
 
@@ -994,8 +990,8 @@ AggregationOptions defines configuration options for aggregating events.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| window_size | [google.protobuf.Duration](#google-protobuf-Duration) |  | Aggregation window size. Defaults to 15 seconds if this field is not set. |
-| channel_buffer_size | [uint64](#uint64) |  | Size of the buffer for the aggregator to receive incoming events. If the buffer becomes full, the aggregator will log a warning and start dropping incoming events. |
+| window_size | google.protobuf.Duration |  | Aggregation window size. Defaults to 15 seconds if this field is not set. |
+| channel_buffer_size | uint64 |  | Size of the buffer for the aggregator to receive incoming events. If the buffer becomes full, the aggregator will log a warning and start dropping incoming events. |
 
 <a name="tetragon-CapFilter"></a>
 
@@ -1007,9 +1003,9 @@ NOT match.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| permitted | [CapFilterSet](#tetragon-CapFilterSet) |  | Filter over the set of permitted capabilities. |
-| effective | [CapFilterSet](#tetragon-CapFilterSet) |  | Filter over the set of effective capabilities. |
-| inheritable | [CapFilterSet](#tetragon-CapFilterSet) |  | Filter over the set of inheritable capabilities. |
+| permitted | [CapFilterSet](#capfilterset) |  | Filter over the set of permitted capabilities. |
+| effective | [CapFilterSet](#capfilterset) |  | Filter over the set of effective capabilities. |
+| inheritable | [CapFilterSet](#capfilterset) |  | Filter over the set of inheritable capabilities. |
 
 <a name="tetragon-CapFilterSet"></a>
 
@@ -1018,10 +1014,10 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| any | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated | Match if the capability set contains any of the capabilities defined in this filter. |
-| all | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated | Match if the capability set contains all of the capabilities defined in this filter. |
-| exactly | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated | Match if the capability set exactly matches all of the capabilities defined in this filter. |
-| none | [CapabilitiesType](#tetragon-CapabilitiesType) | repeated | Match if the capability set contains none of the capabilities defined in this filter. |
+| any | [CapabilitiesType](#capabilitiestype) | repeated | Match if the capability set contains any of the capabilities defined in this filter. |
+| all | [CapabilitiesType](#capabilitiestype) | repeated | Match if the capability set contains all of the capabilities defined in this filter. |
+| exactly | [CapabilitiesType](#capabilitiestype) | repeated | Match if the capability set exactly matches all of the capabilities defined in this filter. |
+| none | [CapabilitiesType](#capabilitiestype) | repeated | Match if the capability set contains none of the capabilities defined in this filter. |
 
 <a name="tetragon-FieldFilter"></a>
 
@@ -1029,10 +1025,10 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| event_set | [EventType](#tetragon-EventType) | repeated | Event types to filter or undefined to filter over all event types. |
-| fields | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  | Fields to include or exclude. |
-| action | [FieldFilterAction](#tetragon-FieldFilterAction) |  | Whether to include or exclude fields. |
-| invert_event_set | [google.protobuf.BoolValue](#google-protobuf-BoolValue) |  | Whether or not the event set filter should be inverted. |
+| event_set | [EventType](#eventtype) | repeated | Event types to filter or undefined to filter over all event types. |
+| fields | google.protobuf.FieldMask |  | Fields to include or exclude. |
+| action | [FieldFilterAction](#fieldfilteraction) |  | Whether to include or exclude fields. |
+| invert_event_set | google.protobuf.BoolValue |  | Whether or not the event set filter should be inverted. |
 
 <a name="tetragon-Filter"></a>
 
@@ -1040,25 +1036,25 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| binary_regex | [string](#string) | repeated |  |
-| namespace | [string](#string) | repeated |  |
-| health_check | [google.protobuf.BoolValue](#google-protobuf-BoolValue) |  |  |
-| pid | [uint32](#uint32) | repeated |  |
-| pid_set | [uint32](#uint32) | repeated | Filter by the PID of a process and any of its descendants. Note that this filter is intended for testing and development purposes only and should not be used in production. In particular, PID cycling in the OS over longer periods of time may cause unexpected events to pass this filter. |
-| event_set | [EventType](#tetragon-EventType) | repeated |  |
-| pod_regex | [string](#string) | repeated | Filter by process.pod.name field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
-| arguments_regex | [string](#string) | repeated | Filter by process.arguments field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
-| labels | [string](#string) | repeated | Filter events by pod labels using Kubernetes label selector syntax: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors Note that this filter never matches events without the pod field (i.e. host process events). |
-| policy_names | [string](#string) | repeated | Filter events by tracing policy names |
-| capabilities | [CapFilter](#tetragon-CapFilter) |  | Filter events by Linux process capability |
-| parent_binary_regex | [string](#string) | repeated | Filter parent process&#39; binary using RE2 regular expression syntax. |
-| cel_expression | [string](#string) | repeated | Filter using CEL expressions. CEL filters support IP and CIDR notiation extensions from the k8s project. See https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#IP and https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#CIDR for details. |
-| parent_arguments_regex | [string](#string) | repeated | Filter by process.parent.arguments field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
-| container_id | [string](#string) | repeated | Filter by the container ID in the process.docker field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
-| in_init_tree | [google.protobuf.BoolValue](#google-protobuf-BoolValue) |  | Filter containerized processes based on whether they are descendants of the container&#39;s init process. This can be used, for example, to watch for processes injected into a container via docker exec, kubectl exec, or similar mechanisms. |
-| ancestor_binary_regex | [string](#string) | repeated | Filter ancestor processes&#39; binaries using RE2 regular expression syntax. |
-| container_name_regex | [string](#string) | repeated | Filter by the container name in the process.pod.container field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
-| namespace_regex | [string](#string) | repeated | Filter by the namespace in the process.pod.namespace field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
+| binary_regex | string | repeated |  |
+| namespace | string | repeated |  |
+| health_check | google.protobuf.BoolValue |  |  |
+| pid | uint32 | repeated |  |
+| pid_set | uint32 | repeated | Filter by the PID of a process and any of its descendants. Note that this filter is intended for testing and development purposes only and should not be used in production. In particular, PID cycling in the OS over longer periods of time may cause unexpected events to pass this filter. |
+| event_set | [EventType](#eventtype) | repeated |  |
+| pod_regex | string | repeated | Filter by process.pod.name field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
+| arguments_regex | string | repeated | Filter by process.arguments field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
+| labels | string | repeated | Filter events by pod labels using Kubernetes label selector syntax: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors Note that this filter never matches events without the pod field (i.e. host process events). |
+| policy_names | string | repeated | Filter events by tracing policy names |
+| capabilities | [CapFilter](#capfilter) |  | Filter events by Linux process capability |
+| parent_binary_regex | string | repeated | Filter parent process&#39; binary using RE2 regular expression syntax. |
+| cel_expression | string | repeated | Filter using CEL expressions. CEL filters support IP and CIDR notiation extensions from the k8s project. See https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#IP and https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#CIDR for details. |
+| parent_arguments_regex | string | repeated | Filter by process.parent.arguments field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
+| container_id | string | repeated | Filter by the container ID in the process.docker field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
+| in_init_tree | google.protobuf.BoolValue |  | Filter containerized processes based on whether they are descendants of the container&#39;s init process. This can be used, for example, to watch for processes injected into a container via docker exec, kubectl exec, or similar mechanisms. |
+| ancestor_binary_regex | string | repeated | Filter ancestor processes&#39; binaries using RE2 regular expression syntax. |
+| container_name_regex | string | repeated | Filter by the container name in the process.pod.container field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
+| namespace_regex | string | repeated | Filter by the namespace in the process.pod.namespace field using RE2 regular expression syntax: https://github.com/google/re2/wiki/Syntax |
 
 <a name="tetragon-GetEventsRequest"></a>
 
@@ -1066,10 +1062,10 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| allow_list | [Filter](#tetragon-Filter) | repeated | allow_list specifies a list of filters to apply to only return certain events. If multiple filters are specified, at least one of them has to match for an event to be included in the results. |
-| deny_list | [Filter](#tetragon-Filter) | repeated | deny_list specifies a list of filters to apply to exclude certain events from the results. If multiple filters are specified, at least one of them has to match for an event to be excluded. If both allow_list and deny_list are specified, the results contain the set difference allow_list - deny_list. |
-| aggregation_options | [AggregationOptions](#tetragon-AggregationOptions) |  | aggregation_options configures aggregation options for this request. If this field is not set, responses will not be aggregated. Note that currently only process_accept and process_connect events are aggregated. Other events remain unaggregated. |
-| field_filters | [FieldFilter](#tetragon-FieldFilter) | repeated | Fields to include or exclude for events in the GetEventsResponse. Omitting this field implies that all fields will be included. Exclusion always takes precedence over inclusion in the case of conflicts. |
+| allow_list | [Filter](#filter) | repeated | allow_list specifies a list of filters to apply to only return certain events. If multiple filters are specified, at least one of them has to match for an event to be included in the results. |
+| deny_list | [Filter](#filter) | repeated | deny_list specifies a list of filters to apply to exclude certain events from the results. If multiple filters are specified, at least one of them has to match for an event to be excluded. If both allow_list and deny_list are specified, the results contain the set difference allow_list - deny_list. |
+| aggregation_options | [AggregationOptions](#aggregationoptions) |  | aggregation_options configures aggregation options for this request. If this field is not set, responses will not be aggregated. Note that currently only process_accept and process_connect events are aggregated. Other events remain unaggregated. |
+| field_filters | [FieldFilter](#fieldfilter) | repeated | Fields to include or exclude for events in the GetEventsResponse. Omitting this field implies that all fields will be included. Exclusion always takes precedence over inclusion in the case of conflicts. |
 
 <a name="tetragon-GetEventsResponse"></a>
 
@@ -1077,22 +1073,22 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process_exec | [ProcessExec](#tetragon-ProcessExec) |  | ProcessExec event includes information about the execution of binaries and other related process metadata. |
-| process_exit | [ProcessExit](#tetragon-ProcessExit) |  | ProcessExit event indicates how and when a process terminates. |
-| process_kprobe | [ProcessKprobe](#tetragon-ProcessKprobe) |  | ProcessKprobe event contains information about the pre-defined functions and the process that invoked them. |
-| process_tracepoint | [ProcessTracepoint](#tetragon-ProcessTracepoint) |  | ProcessTracepoint contains information about the pre-defined tracepoint and the process that invoked them. |
-| process_loader | [ProcessLoader](#tetragon-ProcessLoader) |  |  |
-| process_uprobe | [ProcessUprobe](#tetragon-ProcessUprobe) |  |  |
-| process_throttle | [ProcessThrottle](#tetragon-ProcessThrottle) |  |  |
-| process_lsm | [ProcessLsm](#tetragon-ProcessLsm) |  |  |
-| process_usdt | [ProcessUsdt](#tetragon-ProcessUsdt) |  |  |
-| test | [Test](#tetragon-Test) |  |  |
-| rate_limit_info | [RateLimitInfo](#tetragon-RateLimitInfo) |  |  |
-| node_name | [string](#string) |  | Name of the node where this event was observed. |
-| time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | Timestamp at which this event was observed. For an aggregated response, this field to set to the timestamp at which the event was observed for the first time in a given aggregation time window. |
-| aggregation_info | [AggregationInfo](#tetragon-AggregationInfo) |  | aggregation_info contains information about aggregation results. This field is set only for aggregated responses. |
-| cluster_name | [string](#string) |  | Name of the cluster where this event was observed. |
-| node_labels | [GetEventsResponse.NodeLabelsEntry](#tetragon-GetEventsResponse-NodeLabelsEntry) | repeated | Labels associated with the node where this event was observed. |
+| process_exec | [ProcessExec](#processexec) |  | ProcessExec event includes information about the execution of binaries and other related process metadata. |
+| process_exit | [ProcessExit](#processexit) |  | ProcessExit event indicates how and when a process terminates. |
+| process_kprobe | [ProcessKprobe](#processkprobe) |  | ProcessKprobe event contains information about the pre-defined functions and the process that invoked them. |
+| process_tracepoint | [ProcessTracepoint](#processtracepoint) |  | ProcessTracepoint contains information about the pre-defined tracepoint and the process that invoked them. |
+| process_loader | [ProcessLoader](#processloader) |  |  |
+| process_uprobe | [ProcessUprobe](#processuprobe) |  |  |
+| process_throttle | [ProcessThrottle](#processthrottle) |  |  |
+| process_lsm | [ProcessLsm](#processlsm) |  |  |
+| process_usdt | [ProcessUsdt](#processusdt) |  |  |
+| test | [Test](#test) |  |  |
+| rate_limit_info | [RateLimitInfo](#ratelimitinfo) |  |  |
+| node_name | string |  | Name of the node where this event was observed. |
+| time | google.protobuf.Timestamp |  | Timestamp at which this event was observed. For an aggregated response, this field to set to the timestamp at which the event was observed for the first time in a given aggregation time window. |
+| aggregation_info | [AggregationInfo](#aggregationinfo) |  | aggregation_info contains information about aggregation results. This field is set only for aggregated responses. |
+| cluster_name | string |  | Name of the cluster where this event was observed. |
+| node_labels | [GetEventsResponse.NodeLabelsEntry](#geteventsresponsenodelabelsentry) | repeated | Labels associated with the node where this event was observed. |
 
 <a name="tetragon-GetEventsResponse-NodeLabelsEntry"></a>
 
@@ -1100,8 +1096,8 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [string](#string) |  |  |
+| key | string |  |  |
+| value | string |  |  |
 
 <a name="tetragon-ProcessThrottle"></a>
 
@@ -1109,8 +1105,8 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| type | [ThrottleType](#tetragon-ThrottleType) |  | Throttle type |
-| cgroup | [string](#string) |  | Cgroup name |
+| type | [ThrottleType](#throttletype) |  | Throttle type |
+| cgroup | string |  | Cgroup name |
 
 <a name="tetragon-RateLimitInfo"></a>
 
@@ -1118,7 +1114,7 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| number_of_dropped_process_events | [uint64](#uint64) |  |  |
+| number_of_dropped_process_events | uint64 |  |  |
 
 <a name="tetragon-RedactionFilter"></a>
 
@@ -1126,10 +1122,10 @@ Capability set to filter over. NOTE: you may specify only ONE set here.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| match | [Filter](#tetragon-Filter) | repeated | **Deprecated.** Deprecated, do not use. |
-| redact | [string](#string) | repeated | RE2 regular expressions to use for redaction. Strings inside capture groups are redacted. |
-| binary_regex | [string](#string) | repeated | RE2 regular expression to match binary name. If supplied, redactions will only be applied to matching processes. |
-| redact_str | [string](#string) |  | Optional replacement string for redacted content. Defaults to &#34;*****&#34; if not specified. |
+| match | [Filter](#filter) | repeated | **Deprecated.** Deprecated, do not use. |
+| redact | string | repeated | RE2 regular expressions to use for redaction. Strings inside capture groups are redacted. |
+| binary_regex | string | repeated | RE2 regular expression to match binary name. If supplied, redactions will only be applied to matching processes. |
+| redact_str | string |  | Optional replacement string for redacted content. Defaults to &#34;*****&#34; if not specified. |
 
 <a name="tetragon-EventType"></a>
 
@@ -1184,8 +1180,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| yaml | [string](#string) |  |  |
-| domain | [string](#string) |  |  |
+| yaml | string |  |  |
+| domain | string |  |  |
 
 <a name="tetragon-AddTracingPolicyResponse"></a>
 
@@ -1197,11 +1193,11 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-| namespace | [string](#string) |  |  |
-| enable | [bool](#bool) | optional |  |
-| mode | [TracingPolicyMode](#tetragon-TracingPolicyMode) | optional |  |
-| domain | [string](#string) |  |  |
+| name | string |  |  |
+| namespace | string |  |  |
+| enable | bool | optional |  |
+| mode | [TracingPolicyMode](#tracingpolicymode) | optional |  |
+| domain | string |  |  |
 
 <a name="tetragon-ConfigureTracingPolicyResponse"></a>
 
@@ -1213,9 +1209,9 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-| namespace | [string](#string) |  |  |
-| domain | [string](#string) |  |  |
+| name | string |  |  |
+| namespace | string |  |  |
+| domain | string |  |  |
 
 <a name="tetragon-DeleteTracingPolicyResponse"></a>
 
@@ -1227,7 +1223,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
+| name | string |  |  |
 
 <a name="tetragon-DisableSensorResponse"></a>
 
@@ -1239,9 +1235,9 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-| namespace | [string](#string) |  |  |
-| domain | [string](#string) |  |  |
+| name | string |  |  |
+| namespace | string |  |  |
+| domain | string |  |  |
 
 <a name="tetragon-DisableTracingPolicyResponse"></a>
 
@@ -1253,8 +1249,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| skip_zero_refcnt | [bool](#bool) |  |  |
-| exclude_execve_map_processes | [bool](#bool) |  |  |
+| skip_zero_refcnt | bool |  |  |
+| exclude_execve_map_processes | bool |  |  |
 
 <a name="tetragon-DumpProcessCacheResArgs"></a>
 
@@ -1262,7 +1258,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| processes | [ProcessInternal](#tetragon-ProcessInternal) | repeated |  |
+| processes | [ProcessInternal](#processinternal) | repeated |  |
 
 <a name="tetragon-EnableSensorRequest"></a>
 
@@ -1270,7 +1266,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
+| name | string |  |  |
 
 <a name="tetragon-EnableSensorResponse"></a>
 
@@ -1282,9 +1278,9 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-| namespace | [string](#string) |  |  |
-| domain | [string](#string) |  |  |
+| name | string |  |  |
+| namespace | string |  |  |
+| domain | string |  |  |
 
 <a name="tetragon-EnableTracingPolicyResponse"></a>
 
@@ -1296,8 +1292,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| flag | [ConfigFlag](#tetragon-ConfigFlag) |  |  |
-| dump | [DumpProcessCacheReqArgs](#tetragon-DumpProcessCacheReqArgs) |  |  |
+| flag | [ConfigFlag](#configflag) |  |  |
+| dump | [DumpProcessCacheReqArgs](#dumpprocesscachereqargs) |  |  |
 
 <a name="tetragon-GetDebugResponse"></a>
 
@@ -1305,9 +1301,9 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| flag | [ConfigFlag](#tetragon-ConfigFlag) |  |  |
-| level | [LogLevel](#tetragon-LogLevel) |  |  |
-| processes | [DumpProcessCacheResArgs](#tetragon-DumpProcessCacheResArgs) |  |  |
+| flag | [ConfigFlag](#configflag) |  |  |
+| level | [LogLevel](#loglevel) |  |  |
+| processes | [DumpProcessCacheResArgs](#dumpprocesscacheresargs) |  |  |
 
 <a name="tetragon-GetInfoRequest"></a>
 
@@ -1319,11 +1315,11 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| version | [string](#string) |  | version is the version of the agent tetragon (same as GetVersionResponse()) |
-| name | [string](#string) |  | name is the name of the agent |
-| probes | [GetInfoResponse.Probe](#tetragon-GetInfoResponse-Probe) | repeated | probes is a list of kernel features that have been probed by the agent |
-| conf | [GetInfoResponse.ConfVal](#tetragon-GetInfoResponse-ConfVal) | repeated | conf is the agent configuration |
-| build | [GetInfoResponse.BuildInfo](#tetragon-GetInfoResponse-BuildInfo) |  | build is the agent build information |
+| version | string |  | version is the version of the agent tetragon (same as GetVersionResponse()) |
+| name | string |  | name is the name of the agent |
+| probes | [GetInfoResponse.Probe](#getinforesponseprobe) | repeated | probes is a list of kernel features that have been probed by the agent |
+| conf | [GetInfoResponse.ConfVal](#getinforesponseconfval) | repeated | conf is the agent configuration |
+| build | [GetInfoResponse.BuildInfo](#getinforesponsebuildinfo) |  | build is the agent build information |
 
 <a name="tetragon-GetInfoResponse-BuildInfo"></a>
 
@@ -1331,10 +1327,10 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| go_version | [string](#string) |  |  |
-| commit | [string](#string) |  |  |
-| time | [string](#string) |  |  |
-| modified | [string](#string) |  |  |
+| go_version | string |  |  |
+| commit | string |  |  |
+| time | string |  |  |
+| modified | string |  |  |
 
 <a name="tetragon-GetInfoResponse-ConfVal"></a>
 
@@ -1342,8 +1338,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [google.protobuf.Any](#google-protobuf-Any) |  |  |
+| key | string |  |  |
+| value | google.protobuf.Any |  |  |
 
 <a name="tetragon-GetInfoResponse-Probe"></a>
 
@@ -1351,8 +1347,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| Name | [string](#string) |  |  |
-| Enabled | [google.protobuf.BoolValue](#google-protobuf-BoolValue) |  |  |
+| Name | string |  |  |
+| Enabled | google.protobuf.BoolValue |  |  |
 
 <a name="tetragon-GetVersionRequest"></a>
 
@@ -1364,7 +1360,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| version | [string](#string) |  |  |
+| version | string |  |  |
 
 <a name="tetragon-HookStatus"></a>
 
@@ -1372,10 +1368,10 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| section | [string](#string) |  | hook&#39;s section within the policy |
-| state | [HookState](#tetragon-HookState) |  | hook state |
-| hook_description | [string](#string) |  | description of hook |
-| hook_idx | [uint32](#uint32) |  | the index at which this hook is configured within its section |
+| section | string |  | hook&#39;s section within the policy |
+| state | [HookState](#hookstate) |  | hook state |
+| hook_description | string |  | description of hook |
+| hook_idx | uint32 |  | the index at which this hook is configured within its section |
 
 <a name="tetragon-ListDomainsRequest"></a>
 
@@ -1387,7 +1383,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| domains | [string](#string) | repeated |  |
+| domains | string | repeated |  |
 
 <a name="tetragon-ListSensorsRequest"></a>
 
@@ -1399,7 +1395,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sensors | [SensorStatus](#tetragon-SensorStatus) | repeated |  |
+| sensors | [SensorStatus](#sensorstatus) | repeated |  |
 
 <a name="tetragon-ListTracingPoliciesRequest"></a>
 
@@ -1407,7 +1403,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| domain | [string](#string) |  | domain to be listed; empty to list all domains |
+| domain | string |  | domain to be listed; empty to list all domains |
 
 <a name="tetragon-ListTracingPoliciesResponse"></a>
 
@@ -1415,7 +1411,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| policies | [TracingPolicyStatus](#tetragon-TracingPolicyStatus) | repeated |  |
+| policies | [TracingPolicyStatus](#tracingpolicystatus) | repeated |  |
 
 <a name="tetragon-ProcessInternal"></a>
 
@@ -1423,10 +1419,10 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| process | [Process](#tetragon-Process) |  |  |
-| color | [string](#string) |  |  |
-| refcnt | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  |  |
-| refcnt_ops | [ProcessInternal.RefcntOpsEntry](#tetragon-ProcessInternal-RefcntOpsEntry) | repeated | refcnt_ops is a map of operations to refcnt change keys can be: - &#34;process&#43;&#43;&#34;: process increased refcnt (i.e. this process starts) - &#34;process--&#34;: process decreased refcnt (i.e. this process exits) - &#34;parent&#43;&#43;&#34;: parent increased refcnt (i.e. a process starts that has this process as a parent) - &#34;parent--&#34;: parent decreased refcnt (i.e. a process exits that has this process as a parent) - &#34;ancestor&#43;&#43;&#34;: ancestor increased refcnt (i.e. a process starts that has this process as an ancestor) - &#34;ancestor--&#34;: ancestor decreased refcnt (i.e. a process exits that has this process as an ancestor) |
+| process | [Process](#process) |  |  |
+| color | string |  |  |
+| refcnt | google.protobuf.UInt32Value |  |  |
+| refcnt_ops | [ProcessInternal.RefcntOpsEntry](#processinternalrefcntopsentry) | repeated | refcnt_ops is a map of operations to refcnt change keys can be: - &#34;process&#43;&#43;&#34;: process increased refcnt (i.e. this process starts) - &#34;process--&#34;: process decreased refcnt (i.e. this process exits) - &#34;parent&#43;&#43;&#34;: parent increased refcnt (i.e. a process starts that has this process as a parent) - &#34;parent--&#34;: parent decreased refcnt (i.e. a process exits that has this process as a parent) - &#34;ancestor&#43;&#43;&#34;: ancestor increased refcnt (i.e. a process starts that has this process as an ancestor) - &#34;ancestor--&#34;: ancestor decreased refcnt (i.e. a process exits that has this process as an ancestor) |
 
 <a name="tetragon-ProcessInternal-RefcntOpsEntry"></a>
 
@@ -1434,8 +1430,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [int32](#int32) |  |  |
+| key | string |  |  |
+| value | int32 |  |  |
 
 <a name="tetragon-RemoveSensorRequest"></a>
 
@@ -1443,7 +1439,7 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
+| name | string |  |  |
 
 <a name="tetragon-RemoveSensorResponse"></a>
 
@@ -1455,9 +1451,9 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | name is the name of the sensor |
-| enabled | [bool](#bool) |  | enabled marks whether the sensor is enabled |
-| collection | [string](#string) |  | collection is the collection the sensor belongs to (typically a tracing policy) |
+| name | string |  | name is the name of the sensor |
+| enabled | bool |  | enabled marks whether the sensor is enabled |
+| collection | string |  | collection is the collection the sensor belongs to (typically a tracing policy) |
 
 <a name="tetragon-SetDebugRequest"></a>
 
@@ -1465,8 +1461,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| flag | [ConfigFlag](#tetragon-ConfigFlag) |  |  |
-| level | [LogLevel](#tetragon-LogLevel) |  |  |
+| flag | [ConfigFlag](#configflag) |  |  |
+| level | [LogLevel](#loglevel) |  |  |
 
 <a name="tetragon-SetDebugResponse"></a>
 
@@ -1474,8 +1470,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| flag | [ConfigFlag](#tetragon-ConfigFlag) |  |  |
-| level | [LogLevel](#tetragon-LogLevel) |  |  |
+| flag | [ConfigFlag](#configflag) |  |  |
+| level | [LogLevel](#loglevel) |  |  |
 
 <a name="tetragon-TracingPolicyActionCounters"></a>
 
@@ -1483,16 +1479,16 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| post | [uint64](#uint64) |  | number of post events generated from the policy |
-| signal | [uint64](#uint64) |  | number of signals sent from the policy |
-| monitor_signal | [uint64](#uint64) |  | number of signals that were not sent because the policy was in monitor mode |
-| override | [uint64](#uint64) |  | number of return overrides |
-| monitor_override | [uint64](#uint64) |  | number of return overrides that did not occur because the policy was in monitor mode |
-| notify_enforcer | [uint64](#uint64) |  | number of enforcer notifications triggered from the policy |
-| monitor_notify_enforcer | [uint64](#uint64) |  | number of enforcer notifications that did not occur because the policy was in monitor mode |
-| set | [uint64](#uint64) |  | number of set actions triggered from the policy |
-| monitor_set | [uint64](#uint64) |  | number of set actions that did not occur because the policy was in monitor mode |
-| nopost | [uint64](#uint64) |  | number of events suppressed by NoPost actions |
+| post | uint64 |  | number of post events generated from the policy |
+| signal | uint64 |  | number of signals sent from the policy |
+| monitor_signal | uint64 |  | number of signals that were not sent because the policy was in monitor mode |
+| override | uint64 |  | number of return overrides |
+| monitor_override | uint64 |  | number of return overrides that did not occur because the policy was in monitor mode |
+| notify_enforcer | uint64 |  | number of enforcer notifications triggered from the policy |
+| monitor_notify_enforcer | uint64 |  | number of enforcer notifications that did not occur because the policy was in monitor mode |
+| set | uint64 |  | number of set actions triggered from the policy |
+| monitor_set | uint64 |  | number of set actions that did not occur because the policy was in monitor mode |
+| nopost | uint64 |  | number of events suppressed by NoPost actions |
 
 <a name="tetragon-TracingPolicySelectorActionCounters"></a>
 
@@ -1500,11 +1496,11 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hook | [string](#string) |  | hook is the policy hook that owns the selector |
-| hook_index | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | hook_index is the hook index withing a policy |
-| selector_index | [google.protobuf.UInt32Value](#google-protobuf-UInt32Value) |  | selector_index is the selector index within the hook |
-| action_counters | [TracingPolicyActionCounters](#tetragon-TracingPolicyActionCounters) |  | action counters for the selector |
-| selector_label | [string](#string) |  | selector_label is an optional user-provided selector label |
+| hook | string |  | hook is the policy hook that owns the selector |
+| hook_index | google.protobuf.UInt32Value |  | hook_index is the hook index withing a policy |
+| selector_index | google.protobuf.UInt32Value |  | selector_index is the selector index within the hook |
+| action_counters | [TracingPolicyActionCounters](#tracingpolicyactioncounters) |  | action counters for the selector |
+| selector_label | string |  | selector_label is an optional user-provided selector label |
 
 <a name="tetragon-TracingPolicyStats"></a>
 
@@ -1512,8 +1508,8 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| action_counters | [TracingPolicyActionCounters](#tetragon-TracingPolicyActionCounters) |  |  |
-| selector_action_counters | [TracingPolicySelectorActionCounters](#tetragon-TracingPolicySelectorActionCounters) | repeated |  |
+| action_counters | [TracingPolicyActionCounters](#tracingpolicyactioncounters) |  |  |
+| selector_action_counters | [TracingPolicySelectorActionCounters](#tracingpolicyselectoractioncounters) | repeated |  |
 
 <a name="tetragon-TracingPolicyStatus"></a>
 
@@ -1521,20 +1517,20 @@ Determines the behavior of a field filter
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [uint64](#uint64) |  | id is the id of the policy |
-| name | [string](#string) |  | name is the name of the policy |
-| namespace | [string](#string) |  | namespace is the namespace of the policy (or empty of the policy is global) |
-| info | [string](#string) |  | info is additional information about the policy |
-| sensors | [string](#string) | repeated | sensors loaded in the scope of this policy |
-| enabled | [bool](#bool) |  | **Deprecated.** indicating if the policy is enabled. Deprecated: use &#39;state&#39; instead. |
-| filter_id | [uint64](#uint64) |  | filter ID of the policy used for k8s filtering |
-| error | [string](#string) |  | potential error of the policy |
-| state | [TracingPolicyState](#tetragon-TracingPolicyState) |  | current state of the tracing policy |
-| kernel_memory_bytes | [uint64](#uint64) |  | the amount of kernel memory in bytes used by policy&#39;s sensors non-shared BPF maps (memlock) |
-| mode | [TracingPolicyMode](#tetragon-TracingPolicyMode) |  | current mode of the tracing policy |
-| stats | [TracingPolicyStats](#tetragon-TracingPolicyStats) | optional | stats of the tracing policy |
-| domain | [string](#string) |  | domain of the policy |
-| hook_statuses | [HookStatus](#tetragon-HookStatus) | repeated | status of policy&#39;s hooks |
+| id | uint64 |  | id is the id of the policy |
+| name | string |  | name is the name of the policy |
+| namespace | string |  | namespace is the namespace of the policy (or empty of the policy is global) |
+| info | string |  | info is additional information about the policy |
+| sensors | string | repeated | sensors loaded in the scope of this policy |
+| enabled | bool |  | **Deprecated.** indicating if the policy is enabled. Deprecated: use &#39;state&#39; instead. |
+| filter_id | uint64 |  | filter ID of the policy used for k8s filtering |
+| error | string |  | potential error of the policy |
+| state | [TracingPolicyState](#tracingpolicystate) |  | current state of the tracing policy |
+| kernel_memory_bytes | uint64 |  | the amount of kernel memory in bytes used by policy&#39;s sensors non-shared BPF maps (memlock) |
+| mode | [TracingPolicyMode](#tracingpolicymode) |  | current mode of the tracing policy |
+| stats | [TracingPolicyStats](#tracingpolicystats) | optional | stats of the tracing policy |
+| domain | string |  | domain of the policy |
+| hook_statuses | [HookStatus](#hookstatus) | repeated | status of policy&#39;s hooks |
 
 <a name="tetragon-ConfigFlag"></a>
 
@@ -1605,24 +1601,24 @@ For now, we only want to support debug-related config flags to be configurable.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetEvents | [GetEventsRequest](#tetragon-GetEventsRequest) | [GetEventsResponse](#tetragon-GetEventsResponse) stream |  |
-| GetHealth | [GetHealthStatusRequest](#tetragon-GetHealthStatusRequest) | [GetHealthStatusResponse](#tetragon-GetHealthStatusResponse) |  |
-| AddTracingPolicy | [AddTracingPolicyRequest](#tetragon-AddTracingPolicyRequest) | [AddTracingPolicyResponse](#tetragon-AddTracingPolicyResponse) |  |
-| DeleteTracingPolicy | [DeleteTracingPolicyRequest](#tetragon-DeleteTracingPolicyRequest) | [DeleteTracingPolicyResponse](#tetragon-DeleteTracingPolicyResponse) |  |
-| ListTracingPolicies | [ListTracingPoliciesRequest](#tetragon-ListTracingPoliciesRequest) | [ListTracingPoliciesResponse](#tetragon-ListTracingPoliciesResponse) |  |
-| ConfigureTracingPolicy | [ConfigureTracingPolicyRequest](#tetragon-ConfigureTracingPolicyRequest) | [ConfigureTracingPolicyResponse](#tetragon-ConfigureTracingPolicyResponse) | ConfigureTracingPolicy can be used to configure a loaded tracing policy. It can be used to: - enable/disable it - change its mode (enforcement vs monitoring) If multiple changes are requested and an error is encountered, the resulting state might have partial updates applied. In other words, the configuring a tracing policy is not atomic. |
-| EnableTracingPolicy | [EnableTracingPolicyRequest](#tetragon-EnableTracingPolicyRequest) | [EnableTracingPolicyResponse](#tetragon-EnableTracingPolicyResponse) |  |
-| DisableTracingPolicy | [DisableTracingPolicyRequest](#tetragon-DisableTracingPolicyRequest) | [DisableTracingPolicyResponse](#tetragon-DisableTracingPolicyResponse) |  |
-| ListSensors | [ListSensorsRequest](#tetragon-ListSensorsRequest) | [ListSensorsResponse](#tetragon-ListSensorsResponse) |  |
-| EnableSensor | [EnableSensorRequest](#tetragon-EnableSensorRequest) | [EnableSensorResponse](#tetragon-EnableSensorResponse) |  |
-| DisableSensor | [DisableSensorRequest](#tetragon-DisableSensorRequest) | [DisableSensorResponse](#tetragon-DisableSensorResponse) |  |
-| RemoveSensor | [RemoveSensorRequest](#tetragon-RemoveSensorRequest) | [RemoveSensorResponse](#tetragon-RemoveSensorResponse) |  |
-| ListDomains | [ListDomainsRequest](#tetragon-ListDomainsRequest) | [ListDomainsResponse](#tetragon-ListDomainsResponse) |  |
-| GetVersion | [GetVersionRequest](#tetragon-GetVersionRequest) | [GetVersionResponse](#tetragon-GetVersionResponse) |  |
-| GetInfo | [GetInfoRequest](#tetragon-GetInfoRequest) | [GetInfoResponse](#tetragon-GetInfoResponse) |  |
-| RuntimeHook | [RuntimeHookRequest](#tetragon-RuntimeHookRequest) | [RuntimeHookResponse](#tetragon-RuntimeHookResponse) |  |
-| GetDebug | [GetDebugRequest](#tetragon-GetDebugRequest) | [GetDebugResponse](#tetragon-GetDebugResponse) |  |
-| SetDebug | [SetDebugRequest](#tetragon-SetDebugRequest) | [SetDebugResponse](#tetragon-SetDebugResponse) |  |
+| GetEvents | [GetEventsRequest](#geteventsrequest) | [GetEventsResponse](#geteventsresponse) stream |  |
+| GetHealth | [GetHealthStatusRequest](#gethealthstatusrequest) | [GetHealthStatusResponse](#gethealthstatusresponse) |  |
+| AddTracingPolicy | [AddTracingPolicyRequest](#addtracingpolicyrequest) | [AddTracingPolicyResponse](#addtracingpolicyresponse) |  |
+| DeleteTracingPolicy | [DeleteTracingPolicyRequest](#deletetracingpolicyrequest) | [DeleteTracingPolicyResponse](#deletetracingpolicyresponse) |  |
+| ListTracingPolicies | [ListTracingPoliciesRequest](#listtracingpoliciesrequest) | [ListTracingPoliciesResponse](#listtracingpoliciesresponse) |  |
+| ConfigureTracingPolicy | [ConfigureTracingPolicyRequest](#configuretracingpolicyrequest) | [ConfigureTracingPolicyResponse](#configuretracingpolicyresponse) | ConfigureTracingPolicy can be used to configure a loaded tracing policy. It can be used to: - enable/disable it - change its mode (enforcement vs monitoring) If multiple changes are requested and an error is encountered, the resulting state might have partial updates applied. In other words, the configuring a tracing policy is not atomic. |
+| EnableTracingPolicy | [EnableTracingPolicyRequest](#enabletracingpolicyrequest) | [EnableTracingPolicyResponse](#enabletracingpolicyresponse) |  |
+| DisableTracingPolicy | [DisableTracingPolicyRequest](#disabletracingpolicyrequest) | [DisableTracingPolicyResponse](#disabletracingpolicyresponse) |  |
+| ListSensors | [ListSensorsRequest](#listsensorsrequest) | [ListSensorsResponse](#listsensorsresponse) |  |
+| EnableSensor | [EnableSensorRequest](#enablesensorrequest) | [EnableSensorResponse](#enablesensorresponse) |  |
+| DisableSensor | [DisableSensorRequest](#disablesensorrequest) | [DisableSensorResponse](#disablesensorresponse) |  |
+| RemoveSensor | [RemoveSensorRequest](#removesensorrequest) | [RemoveSensorResponse](#removesensorresponse) |  |
+| ListDomains | [ListDomainsRequest](#listdomainsrequest) | [ListDomainsResponse](#listdomainsresponse) |  |
+| GetVersion | [GetVersionRequest](#getversionrequest) | [GetVersionResponse](#getversionresponse) |  |
+| GetInfo | [GetInfoRequest](#getinforequest) | [GetInfoResponse](#getinforesponse) |  |
+| RuntimeHook | [RuntimeHookRequest](#runtimehookrequest) | [RuntimeHookResponse](#runtimehookresponse) |  |
+| GetDebug | [GetDebugRequest](#getdebugrequest) | [GetDebugResponse](#getdebugresponse) |  |
+| SetDebug | [SetDebugRequest](#setdebugrequest) | [SetDebugResponse](#setdebugresponse) |  |
 
 ## Scalar Value Types
 
@@ -1630,16 +1626,16 @@ For now, we only want to support debug-related config flags to be configurable.
 | ----------- | ----- | --- | ---- | ------ | -- | -- | --- | ---- |
 | <a name="double" /> double |  | double | double | float | float64 | double | float | Float |
 | <a name="float" /> float |  | float | float | float | float32 | float | float | Float |
-| <a name="int32" /> int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
-| <a name="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64 | long | int/long | int64 | long | integer/string | Bignum |
-| <a name="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long | uint32 | uint | integer | Bignum or Fixnum (as required) |
-| <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) |
+| <a id="int32" /> int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
+| <a id="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64 | long | int/long | int64 | long | integer/string | Bignum |
+| <a id="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long | uint32 | uint | integer | Bignum or Fixnum (as required) |
+| <a id="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) |
 | <a name="sint32" /> sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
 | <a name="sint64" /> sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64 | long | int/long | int64 | long | integer/string | Bignum |
 | <a name="fixed32" /> fixed32 | Always four bytes. More efficient than uint32 if values are often greater than 2^28. | uint32 | int | int | uint32 | uint | integer | Bignum or Fixnum (as required) |
 | <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than 2^56. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum |
 | <a name="sfixed32" /> sfixed32 | Always four bytes. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
 | <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long | int64 | long | integer/string | Bignum |
-| <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
-| <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
-| <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
+| <a id="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
+| <a id="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
+| <a id="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |

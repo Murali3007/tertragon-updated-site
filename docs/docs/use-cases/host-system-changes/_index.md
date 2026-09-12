@@ -20,5 +20,5 @@ and containers that affect the host system.
 A kernel module is a code that can be loaded into the kernel image at runtime,
 without rebooting. These modules, which can be loaded by pods and containers,
 can modify the host system. The
-[Monitor Linux kernel modules]({{< ref "/docs/use-cases/host-system-changes/linux-kernel-modules" >}})
+[Monitor Linux kernel modules](/docs/docs/use-cases/host-system-changes/linux-kernel-modules)
 guide will assist you in observing such events.

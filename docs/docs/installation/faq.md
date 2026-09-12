@@ -15,15 +15,15 @@ for up to date information. Not all Tetragon features work with older kernel
 versions. BPF evolves rapidly and we recommend you use the most recent stable
 kernel possible to get the most out of Tetragon's features.
 
-{{< caution >}}
+:::caution
 For arm64 kernels 4.19 and 5.4, some features, like reading exec arguments,
 might not work properly because of a
 [kernel bug](https://lore.kernel.org/stable/20230522203352.738576-1-jolsa@kernel.org/).
 The bug fix was rejected from stable kernels by maintainers. For full
 functionality on arm64, we recommend using kernel 5.10 or later.
-{{< /caution >}}
+:::
 
-Note that Tetragon needs [BTF support]({{< ref "/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file">}})
+Note that Tetragon needs [BTF support](/docs/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file)
 which might take some work on older kernels.
 
 ### What are the Linux kernel configuration options needed to run Tetragon?
@@ -200,12 +200,12 @@ to [can I run Tetragon on Mac computers](#can-i-run-tetragon-on-mac-computers).
 
 ### Can I install and use Tetragon in standalone mode (outside of k8s)?
 
-Yes! Refer to the [Container]({{< ref "/docs/installation/container">}}) or
-[Package]({{< ref "/docs/installation/package">}}) installation guides.
+Yes! Refer to the [Container](/docs/docs/installation/container) or
+[Package](/docs/docs/installation/package) installation guides.
 
 Otherwise you can build Tetragon from source by running `make` to generate standalone
 binaries.
-Make sure to take a look at the [Development Setup](/docs/contribution-guide/development-setup/)
+Make sure to take a look at the [Development Setup](/docs/docs/contribution-guide/development-setup/)
 guide for the build requirements. Then use `sudo ./tetragon --bpf-lib bpf/objs`
 to run Tetragon.
 
@@ -248,7 +248,7 @@ $ docker run -it --rm --privileged --pid=host ubuntu \
 -r--r--r--    1 root     root       4988627 Nov 21 20:33 /sys/kernel/btf/vmlinux
 ```
 
-### Why Tetragon fails with "operation not permitted" when loading BPF programs {#kernel-lockdown}
+### Why Tetragon fails with "operation not permitted" when loading BPF programs
 
 This error indicates that Linux Kernel Lockdown is preventing BPF programs from loading.
 Kernel Lockdown is a security feature designed to prevent even the root user from modifying

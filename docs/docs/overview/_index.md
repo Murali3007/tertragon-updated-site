@@ -19,12 +19,14 @@ it understands Kubernetes identities such as namespaces, pods and so-on - so
 that security event detection can be configured in relation to individual
 workloads.
 
-{{< figure
-    src="/images/smart_observability.png"
-    caption="Tetragon Overview Diagram"
-    width=800px
+<figure>
+  <img
+    src="/tertragon-updated-site/images/smart_observability.png"
+    width="800px"
     alt="A diagram showing Tetragon capabilities and how it interacts with Kubernetes, the kernel and other metrics, logging, tracing or events systems"
->}}
+  />
+  <figcaption>Tetragon Overview Diagram</figcaption>
+</figure>
 
 ## Functionality Overview
 
@@ -78,5 +80,5 @@ a chance to complete the syscall and potentially run additional syscalls.
 
 ## What's next?
 
-- [Getting Started]({{< ref "docs/getting-started" >}}) Get started with Tetragon.
-- [Concepts]({{< ref "docs/concepts" >}}): Learn about Tetragon events.
+- [Getting Started](/docs/docs/getting-started/execution/getting-started) Get started with Tetragon.
+- [Concepts](/docs/docs/concepts/events): Learn about Tetragon events.

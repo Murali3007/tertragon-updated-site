@@ -10,19 +10,19 @@ Tetragon exposes a number of Prometheus metrics that can be used for two main pu
 1. Monitoring the health of Tetragon itself
 2. Monitoring the activity of processes observed by Tetragon
 
-{{< note >}}
+:::note
   When the metrics server is started, Tetragon exposes both health and event
   metrics by default. You can disable event metrics while keeping health metrics
   by passing the `--enable-event-metrics=false` flag.
-{{< /note >}}
+:::
 
-For the full list, refer to [metrics reference]({{< ref "/docs/reference/metrics" >}}).
+For the full list, refer to [metrics reference](/docs/docs/reference/metrics).
 
 ## Enable/Disable Metrics
 
 ### Kubernetes
 
-In a [Kubernetes installation]({{< ref "/docs/installation/kubernetes" >}}), **metrics are enabled by default** and
+In a [Kubernetes installation](/docs/docs/installation/kubernetes), **metrics are enabled by default** and
 exposed via the endpoint `/metrics`. The `tetragon` service exposes the Tetragon Agent metrics on port `2112`, and the
 `tetragon-operator-metrics` service the Tetragon Operator metrics on port `2113`.
 
@@ -53,7 +53,7 @@ tetragonOperator:
 In a non-Kubernetes installation, **metrics are disabled by default**. You can enable them by setting the metrics server
 address of the Tetragon Agent to, for example, `:2112`, via the `--metrics-server` flag.
 
-If using [systemd]({{< ref "/docs/installation/package" >}}), set the `metrics-address` entry in a file under the
+If using [systemd](/docs/docs/installation/package), set the `metrics-address` entry in a file under the
 `/etc/tetragon/tetragon.conf.d/` directory.
 
 ## Verify that metrics are exposed
@@ -92,7 +92,7 @@ promhttp_metric_handler_errors_total{cause="gathering"} 0
 
 ## Configure labels on events metrics
 
-Depending on the workloads running in the environment, [Events Metrics]({{< ref "/docs/reference/metrics#tetragon-events-metrics" >}})
+Depending on the workloads running in the environment, [Events Metrics](/docs/docs/reference/metrics#tetragon-events-metrics)
 may have very high cardinality. This is particularly likely in Kubernetes environments, where each pod creates
 a separate timeseries. To avoid overwhelming Prometheus, Tetragon provides an option to choose which labels are
 populated in these metrics.
@@ -123,7 +123,7 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false
 ```
 
-{{< note >}}
+:::note
 
   By default, the Prometheus Operator only discovers `PodMonitors` and `ServiceMonitors` within its namespace, that are
   labeled with the same release tag as the prometheus-operator release.
@@ -132,7 +132,7 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   fulfill those conditions. This is configurable when installing the
   [Kube-Prometheus-Stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) by setting the `serviceMonitorSelectorNilUsesHelmValues` flag.
 
-{{< /note >}}
+:::
 
 Refer to the official [Kube-Prometheus-Stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) documentation for more details.
 

@@ -29,12 +29,12 @@ sudo ./tetragon \
 
 Use the same options each time Tetragon starts.
 
-{{< caution >}}
+:::caution
 `--release-pinned-bpf` defaults to `true`. Set it explicitly to `false` when
 continuous enforcement across an agent restart is required. Enabling only the
 policy store restores policies, but does not preserve the previous BPF tree
 during startup.
-{{< /caution >}}
+:::
 
 The options have the following roles:
 
@@ -63,10 +63,10 @@ The policies are rebuilt from the persistent store; Tetragon does not reload
 them from `tetragon_old`. The old BPF tree exists only to maintain coverage
 during the handoff.
 
-{{< note >}}
+:::note
 There is an interval during startup in which both the old and replacement
 programs are attached. This avoids an enforcement gap.
-{{< /note >}}
+:::
 
 ## Manage persisted policies
 

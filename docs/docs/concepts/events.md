@@ -22,8 +22,7 @@ level process visibility about the executed binary, its parent and the execution
 time. A base Tetragon installation will produce `process_exec` and `process_exit`
 events encoded in JSON as shown here,
 
-<details><summary>Process execution event</summary>
-<p>
+:::info Process execution event
 
 ```json
 {
@@ -102,13 +101,10 @@ events encoded in JSON as shown here,
 }
 
 ```
-</p>
-</details>
+:::
 
 We will only highlight a few important fields here. For a full specification of events see the Reference
-section. All events in Tetragon contain a `process_exec` block to identify the process generating the
-event. For execution events this is the primary block. For [Tracing Policy]({{< ref "/docs/concepts/tracing-policy" >}}) events the
-hook that generated the event will attach further data to this. The `process_exec` event provides
+section. All events in Tetragon contain a `process_exec` block to identify the process generating the event. For execution events this is the primary block. For [Tracing Policy](/docs/docs/concepts/tracing-policy/example) events the hook that generated the event will attach further data to this. The `process_exec` event provides
 a cluster wide unique id the `process_exec.exec_id` for this process along with the metadata expected
 in a Kubernetes cluster  `process_exec.process.pod`. The binary and args being executed are part of
 the event here `process_exec.process.binary` and `process_exec.process.args`. Finally, a `node_name`
@@ -146,14 +142,14 @@ in cases where two filter configurations match on the same event.
 You can configure export filters using the provided helm options, command line
 flags, or environment variables.
 
-{{< caution >}}
+:::caution
 The `denylist` and `allowlist` filters mentioned above only apply to events
 exported as JSON files (e.g., through a configured `file` sink). These filters
 do not affect events streamed via the gRPC API, which are consumed by tools
 like the `tetra` CLI. You will still see unfiltered events when using the
 `tetra` CLI, even if those events would be filtered out by `denylist` or
 `allowlist` for JSON export.
-{{< /caution >}}
+:::
 
 ##### List of Process Event Filters
 
@@ -232,16 +228,16 @@ To perform redactions, redaction filters define RE2 regular expressions in the
 `redact` field. Any capture groups in these RE2 regular expressions are redacted and
 replaced with `"*****"`.
 
-{{< note >}}
+:::note
 This feature uses RE2 as its regular expression library. Make sure that you follow
 RE2 regular expression guidelines as you may observe unexpected results otherwise.
 More information on RE2 syntax can be found [here](https://github.com/google/re2/wiki/Syntax).
-{{< /note >}}
+:::
 
-{{< warning >}}
+:::warning
 When writing regular expressions in JSON, it is important to escape backslash
 characters. For instance `\Wpasswd\W?` would be written as `{"redact": "\\Wpasswd\\W?"}`.
-{{< /warning >}}
+:::
 
 For more control, you can select which binary or binaries should have their
 arguments or environment variables redacted with the `binary_regex` field.
@@ -299,7 +295,7 @@ It's also possible to store only requested environment variables with
 A second way is to use the [`tetra`](https://github.com/cilium/tetragon/tree/main/cmd/tetra) CLI. This
 has the advantage that it can also be used to filter and pretty print the output. The tool
 allows filtering by process, pod, and other fields. To install tetra see the
-[Tetra Installation Guide]({{< ref "/docs/installation/tetra-cli" >}})
+[Tetra Installation Guide](/docs/docs/installation/tetra-cli)
 
 To start printing events run:
 ```shell

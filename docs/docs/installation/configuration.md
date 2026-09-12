@@ -3,18 +3,23 @@ title: "Configure Tetragon"
 linkTitle: "Configuration"
 weight: 6
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 Depending on your deployment mode, Tetragon configuration can be changed by:
 
-{{< tabpane lang=shell >}}
+<Tabs>
 
-{{< tab Kubernetes >}}
+<TabItem value="kubernetes" label="Kubernetes">
+```shell
 kubectl edit cm -n kube-system tetragon-config
 # Change your configuration setting, save and exit
 # Restart Tetragon daemonset
 kubectl rollout restart -n kube-system ds/tetragon
-{{< /tab >}}
-{{< tab Docker >}}
+```
+</TabItem>
+<TabItem value="docker" label="Docker">
+```shell
 # Change configuration inside /etc/tetragon/ then restart container.
 # Example:
 #   1. As a privileged user, write to the file /etc/tetragon/tetragon.conf.d/export-file
@@ -27,10 +32,11 @@ docker run --name tetragon --rm -d \
   -v /etc/tetragon:/etc/tetragon \
   -v /sys/kernel:/sys/kernel \
   -v /var/log/tetragon:/var/log/tetragon \
-  quay.io/cilium/tetragon:{{< latest-version >}} \
+  quay.io/cilium/tetragon:&lt;TETRAGON_VERSION&gt; \
   /usr/bin/tetragon
-{{< /tab >}}
-{{< tab systemd >}}
+```
+</TabItem>
+<TabItem value="systemd" label="systemd">
 # Change configuration inside /etc/tetragon/ then restart systemd service.
 # Example:
 #   1. As a privileged user, write to the file /etc/tetragon/tetragon.conf.d/export-file
@@ -39,47 +45,47 @@ docker run --name tetragon --rm -d \
 # Tetragon events will be exported to /var/log/tetragon/tetragon.log
 echo "/var/log/tetragon/tetragon.log" > /etc/tetragon/tetragon.conf.d/export-file
 systemctl restart tetragon
-{{< /tab >}}
-{{< /tabpane >}}
+</TabItem>
+</Tabs>
 
 To read more about Tetragon configuration, please check our reference pages:
 
-* For Kubernetes deployments, see the [Helm chart]({{< ref "/docs/reference/helm-chart" >}}) reference.
-* For Container or systemd deployments, see the [Daemon configuration]({{< ref "/docs/reference/daemon-configuration" >}})
+* For Kubernetes deployments, see the [Helm chart](/docs/docs/reference/helm-chart) reference.
+* For Container or systemd deployments, see the [Daemon configuration](/docs/docs/reference/daemon-configuration)
 reference.
-* To secure the gRPC API with TLS or mTLS, see [gRPC TLS / mTLS]({{< ref "/docs/installation/grpc-tls" >}}).
+* To secure the gRPC API with TLS or mTLS, see [gRPC TLS / mTLS](/docs/docs/installation/grpc-tls).
 
 ## Enable Process Credentials
 
 On Linux each process has various associated user, group IDs and capabilities
-known as process credentials. To enable visility into [process_credentials]({{< ref "/docs/reference/grpc-api#processcredentials" >}}),
+known as process credentials. To enable visility into [process_credentials](/docs/docs/reference/grpc-api#processcredentials),
 run Tetragon with `enable-process-cred` setting set.
 
-{{< tabpane lang=shell >}}
+<Tabs>
 
-{{< tab Kubernetes >}}
+<TabItem value="kubernetes" label="Kubernetes">
 kubectl edit cm -n kube-system tetragon-config
 # Change "enable-process-cred" from "false" to "true", then save and exit
 # Restart Tetragon daemonset
 kubectl rollout restart -n kube-system ds/tetragon
-{{< /tab >}}
-{{< tab Docker >}}
+</TabItem>
+<TabItem value="docker" label="Docker">
 echo "true" > /etc/tetragon/tetragon.conf.d/enable-process-cred
 docker run --name tetragon --rm -d \
   --pid=host --cgroupns=host --privileged \
   -v /etc/tetragon:/etc/tetragon \
   -v /sys/kernel:/sys/kernel \
   -v /var/log/tetragon:/var/log/tetragon \
-  quay.io/cilium/tetragon:{{< latest-version >}} \
+  quay.io/cilium/tetragon:&lt;TETRAGON_VERSION&gt; \
   /usr/bin/tetragon
-{{< /tab >}}
-{{< tab systemd >}}
+</TabItem>
+<TabItem value="systemd" label="systemd">
 # Write to the drop-in file /etc/tetragon/tetragon.conf.d/enable-process-cred  true
 # Run the following as a privileged user then restart tetragon service
 echo "true" > /etc/tetragon/tetragon.conf.d/enable-process-cred
 systemctl restart tetragon
-{{< /tab >}}
-{{< /tabpane >}}
+</TabItem>
+</Tabs>
 
 ## Run the operator as non-root
 
@@ -121,11 +127,11 @@ tetragonOperator:
 If you want to revert pre-1.6.0 version behavior for specific requirements and
 run the operator as root, use the following security context:
 
-{{< caution >}}
+:::caution
 It is not recommended to run the operator container as root. Using a non-root
 user adheres to the principle of least privilege and prevents any potential
 privilege escalation.
-{{< /caution >}}
+:::
 
 ```yaml
 tetragonOperator:

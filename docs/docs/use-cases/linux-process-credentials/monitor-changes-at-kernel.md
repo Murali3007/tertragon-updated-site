@@ -5,7 +5,7 @@ description: "Monitor Process Credentials changes at the kernel layer"
 ---
 
 Monitoring Process Credentials changes at the kernel layer is also possible.
-This allows to capture the new [`process_credentials`]({{< ref "/docs/reference/grpc-api#processcredentials" >}}) that should be applied.
+This allows to capture the new [`process_credentials`](/docs/docs/reference/grpc-api#processcredentials) that should be applied.
 
 This [process-creds-installed](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/process-credentials/process-creds-installed.yaml) tracing policy can be used to answer the following questions:
 
@@ -15,11 +15,11 @@ This [process-creds-installed](https://raw.githubusercontent.com/cilium/tetragon
 
 > In which [user namespace](https://man7.org/linux/man-pages/man7/user_namespaces.7.html) the credentials are being changed?
 
-> How to monitor [`process_credentials`]({{< ref "/docs/reference/grpc-api#processcredentials" >}}) changes?
+> How to monitor [`process_credentials`](/docs/docs/reference/grpc-api#processcredentials) changes?
 
 ## Advantages and disadvantages of kernel layer monitoring compared to the system call layer
 
-The main advantages of monitoring at the kernel layer compared to the [system call layer](/docs/use-cases/linux-process-credentials/syscalls-monitoring):
+The main advantages of monitoring at the kernel layer compared to the [system call layer](/docs/docs/use-cases/linux-process-credentials/syscalls-monitoring):
 
 * Not vulnerable to user space arguments tampering.
 
@@ -36,7 +36,7 @@ The main advantages of monitoring at the kernel layer compared to the [system ca
 First, verify that your k8s environment is all setup and that all pods are up and running, and  deploy the Demo Application:
 
 ```shell
-kubectl create -f {{< demo-app-url >}}
+kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.15.3/examples/minikube/http-sw-app.yaml
 ```
 
 It might take several seconds until all pods are Running:
@@ -72,7 +72,7 @@ In another terminal, inside a pod and as a non root user we will execute a setui
 /tmp/su -
 ```
 
-The `tetra` cli will generate the following [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events:
+The `tetra` cli will generate the following [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events:
 
 ```json
 {
@@ -209,10 +209,10 @@ The `tetra` cli will generate the following [ProcessKprobe]({{< ref "/docs/refer
 }
 ```
 
-In addition to the Kubernetes Identity and process metadata from exec events, [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events contain the arguments of the observed system call. In the above case they are:
+In addition to the Kubernetes Identity and process metadata from exec events, [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events contain the arguments of the observed system call. In the above case they are:
 
 - `function_name`: the kernel `commit_creds()` function to install new credentials.
-- `process_credentials_arg`: the new [`process_credentials`]({{< ref "/docs/reference/grpc-api#processcredentials" >}}) to be installed
+- `process_credentials_arg`: the new [`process_credentials`](/docs/docs/reference/grpc-api#processcredentials) to be installed
    on the current process. It includes the UIDs/GIDs, the capabilities and the target user namespace.
 
 Here we can clearly see that the suid binary is being executed by a user ID `11` in order to elevate its privileges to user ID `0` including capabilities.

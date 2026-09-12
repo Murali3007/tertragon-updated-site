@@ -9,11 +9,11 @@ argument. The list contains simple POD types and several complex kernel
 objects that are represented by extracted data type.
 
 List of described data types:
-- [`sint8, int8`](#int8)
+- [`sint8, int8`](#sint8-int8)
 - [`uint8`](#uint8)
-- [`sint16, int16`](#int16)
+- [`sint16, int16`](#sint16-int16)
 - [`uint16`](#uint16)
-- [`int, sint32, int32`](#int)
+- [`int, sint32, int32`](#int-sint32-int32)
 - [`uint32`](#uint32)
 - [`long, sint64, int64`](#long)
 - [`ulong, uint64, size_t`](#ulong)
@@ -52,12 +52,12 @@ List of described data types:
 - [`dentry`](#dentry)
 - [`path`](#path)
 
-{{< note >}}
+:::note
 All integer types (`int8`, `uint8`, `int16`, `uint16`, `int32`, `uint32`, `int64`, `uint64`)
 support `Equal`, `NotEqual`, `GT`, `LT`, and `Mask` operators in `matchArgs` or `matchData`.
-{{< /note >}}
+:::
 
-<a name="int8"></a>
+<a id="int8"></a>
 
 ## `sint8, int8`
 
@@ -67,7 +67,7 @@ The data type extracts 8-bit signed value.
 
 The data type extracts 8-bit unsigned value.
 
-<a name="int16"></a>
+<a id="int16"></a>
 
 ## `sint16, int16`
 
@@ -77,7 +77,7 @@ The data type extracts 16-bit signed value.
 
 The data type extracts 16-bit unsigned value.
 
-<a name="int"></a>
+<a id="int"></a>
 
 ## `int, sint32, int32`
 
@@ -87,13 +87,13 @@ The data type extracts 32-bit signed value.
 
 The data type extracts 32-bit unsigned value.
 
-<a name="long"></a>
+<a id="long"></a>
 
 ## `long, sint64, int64`
 
 The data type extracts 64-bit signed value.
 
-<a name="ulong"></a>
+<a id="ulong"></a>
 
 ## `ulong, uint64, size_t`
 
@@ -210,7 +210,7 @@ block) object. It retrieves the file path associated with the I/O operation.
 In `matchArgs` or `matchData`, use `Equal`, `NotEqual`, `Prefix`, or `Postfix` operators
 with path strings.
 
-See general path limitations in [path retrieval limits](#pathlimits).
+See general path limitations in [path retrieval limits](#path-retrieval-limits).
 
 ## `iov_iter`
 
@@ -263,7 +263,7 @@ and retrieves the `struct linux_binprm::file` full path.
 In `matchArgs` or `matchData`, use `Equal`, `NotEqual`, `Prefix`, `Postfix`, `SubString` (v6.17+),
 or `SubStringIgnoreCase` (v6.19+) operators with path strings.
 
-See general path limitations in [path retrieval limits](#pathlimits).
+See general path limitations in [path retrieval limits](#path-retrieval-limits).
 
 ## `data_loc`
 
@@ -315,8 +315,8 @@ the file's full path.
 In `matchArgs` or `matchData`, use `Equal`, `NotEqual`, `Prefix`, `Postfix`, `SubString` (v6.17+),
 or `SubStringIgnoreCase` (v6.19+) operators with path strings.
 
-See general path limitations in [path retrieval limits](#pathlimits).
-Support for [file type filtering]({{< ref "selectors.md#file-type-filtering" >}}) is also available for this type.
+See general path limitations in [path retrieval limits](#path-retrieval-limits).
+Support for [file type filtering](selectors.md#file-type-filtering) is also available for this type.
 
 ## `dentry`
 
@@ -330,23 +330,23 @@ the path.
 In `matchArgs` or `matchData`, use `Equal`, `NotEqual`, `Prefix`, `Postfix`, `SubString` (v6.17+),
 or `SubStringIgnoreCase` (v6.19+) operators with path strings.
 
-See general path limitations in [path retrieval limits](#pathlimits).
+See general path limitations in [path retrieval limits](#path-retrieval-limits).
 
 ## `path`
 
 The `path` data type represents kernel `struct path` object retrieves
 the related path.
-Support for [file type filtering]({{< ref "selectors.md#file-type-filtering" >}}) is also available for this type.
+Support for [file type filtering](selectors.md#file-type-filtering) is also available for this type.
 
 In `matchArgs` or `matchData`, use `Equal`, `NotEqual`, `Prefix`, `Postfix`, `SubString` (v6.17+),
 or `SubStringIgnoreCase` (v6.19+) operators with path strings.
 
-<a name="pathlimits"></a>
+### Path retrieval limits
 
-{{< caution >}}
+:::caution
 Full path retrieval is available only on kernels `v5.3` and later.
 
 On older kernels, there's a limit of 256 path components, which means
 we can retrieve up to the maximum path length (4096 bytes), but only
 with 256 path entries (directories and file name).
-{{< /caution >}}
+:::

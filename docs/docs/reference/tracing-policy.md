@@ -254,7 +254,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -975,18 +975,18 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
-	      - ArgNewAddr: override call to a new address (in the binary)
-	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
+      &bull; ArgNewAddr: override call to a new address (in the binary)<br/>
+      &bull; ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
             <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
         </td>
@@ -1667,18 +1667,18 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
-	      - ArgNewAddr: override call to a new address (in the binary)
-	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
+      &bull; ArgNewAddr: override call to a new address (in the binary)<br/>
+      &bull; ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
             <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
         </td>
@@ -1956,7 +1956,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -2039,7 +2039,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -2121,7 +2121,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -2204,7 +2204,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -2899,16 +2899,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -3591,16 +3591,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -3880,7 +3880,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -3963,7 +3963,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -4045,7 +4045,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -4492,16 +4492,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -5184,16 +5184,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -5473,7 +5473,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -5556,7 +5556,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -5638,7 +5638,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -5729,7 +5729,7 @@ matchExpressions.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -5844,7 +5844,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -6064,16 +6064,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -6756,16 +6756,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -7045,7 +7045,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -7128,7 +7128,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -7210,7 +7210,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -7615,16 +7615,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -8307,16 +8307,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -8596,7 +8596,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -8679,7 +8679,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -8761,7 +8761,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -9483,16 +9483,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -10175,16 +10175,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -10464,7 +10464,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -10547,7 +10547,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -10629,7 +10629,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -11041,16 +11041,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -11733,18 +11733,18 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
-       Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
-	      - ArgNewAddr: override call to a new address (in the binary)
-	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+      Arguments: One of:<br/>
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
+      &bull; ArgNewAddr: override call to a new address (in the binary)<br/>
+      &bull; ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
             <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
         </td>
@@ -12022,7 +12022,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -12105,7 +12105,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -12187,7 +12187,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -12457,7 +12457,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -13178,16 +13178,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -13870,16 +13870,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -14159,7 +14159,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -14242,7 +14242,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -14324,7 +14324,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -14407,7 +14407,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -15102,16 +15102,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -15794,16 +15794,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -16083,7 +16083,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -16166,7 +16166,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -16248,7 +16248,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -16695,16 +16695,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -17387,16 +17387,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -17676,7 +17676,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -17759,7 +17759,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -17841,7 +17841,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -17932,7 +17932,7 @@ matchExpressions.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -18047,7 +18047,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -18267,16 +18267,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -18959,16 +18959,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -19248,7 +19248,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -19331,7 +19331,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -19413,7 +19413,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -19818,16 +19818,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -20510,16 +20510,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -20799,7 +20799,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -20882,7 +20882,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -20964,7 +20964,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -21686,16 +21686,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -22378,16 +22378,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -22667,7 +22667,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -22750,7 +22750,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -22832,7 +22832,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -23244,16 +23244,16 @@ Indexes are zero-based and exclude argv[0].<br/>
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -23936,16 +23936,16 @@ Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.
         <td>
           Action to execute.
 The Override action has three variants, depending on what arguments are set
-  1. Override the return value of function
+  1\. Override the return value of function
        Supported hooks: kprobes, uprobes, lsm
        Arguments: ArgError (return value)
-  2. Override the value of a register
+  2\. Override the value of a register
        Supported hooks: uprobes
        Arguments: ArgRegs
-  3. Override a function call
+  3\. Override a function call
        Supported hooks: uprobes
        Arguments: One of:
-       - ArgNewSymbol: override call to a new symbol (in the binary)
+      &bull; ArgNewSymbol: override call to a new symbol (in the binary)<br/>
 	      - ArgNewAddr: override call to a new address (in the binary)
 	      - ArgNewOffset: override call to an offset (in the binary)<br/>
           <br/>
@@ -24225,7 +24225,7 @@ Currently, only the "name" field is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -24308,7 +24308,7 @@ For now only ~ (none) and {} (all) is supported.
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>
@@ -24390,7 +24390,7 @@ PodSelector selects pods that this policy applies to
         <td><b>matchLabels</b></td>
         <td>map[string]string</td>
         <td>
-          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+          matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the matchLabels
 map is equivalent to an element of matchExpressions, whose key field is "key", the
 operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
         </td>

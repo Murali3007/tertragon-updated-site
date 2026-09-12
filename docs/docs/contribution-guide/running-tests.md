@@ -63,4 +63,4 @@ add flags to the `go test` command.
 
 ## What's next
 
-- See how to [submit your first pull request](/docs/contribution-guide/submitting-a-pull-request/).
+- See how to [submit your first pull request](/docs/docs/contribution-guide/submitting-a-pull-request/).

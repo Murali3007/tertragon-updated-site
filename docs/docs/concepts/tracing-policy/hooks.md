@@ -10,14 +10,14 @@ sections of the `TracingPolicy` specification (`.spec`). These hook points inclu
 return values that can be specified using the `args` and `returnArg` fields as detailed in the
 following sections.
 
-{{< warning >}}
+:::warning
 Hooking a system call can introduce time-of-check to time-of-use (TOCTOU)
 races when the relevant argument is a pointer to user-space memory.
 In that case, user space can modify the underlying data after the hook executes
 but before the kernel consumes it. Hooking a later kernel function, such as an
 LSM `security_` hook, avoids this issue because it operates on kernel-resident
 state after the data has been copied from user space.
-{{< /warning >}}
+:::
 
 ## Kprobes
 
@@ -43,7 +43,7 @@ You can see that the exact name of the symbol for the write syscall on our
 kernel version is `__arm64_sys_write`. Note that on `x86_64`, the prefix would
 be `__x64_` instead of `__arm64_`.
 
-{{< caution >}}
+:::caution
 Kernel symbols contain an architecture specific prefix when they refer to
 syscall symbols. To write portable tracing policies, i.e. policies that can run
 on multiple architectures, just use the symbol name without the prefix.
@@ -52,7 +52,7 @@ For example, instead of writing `call: "__arm64_sys_write"` or `call:
 "__x64_sys_write"`, just write `call: "sys_write"`, Tetragon will adapt and add
 the correct prefix based on the architecture of the underlying machine. Note
 that the event generated as output currently includes the prefix.
-{{< /caution >}}
+:::
 
 In our example, we will explore a `kprobe` hooking into the
 [`fd_install`](https://elixir.bootlin.com/linux/v6.1.9/source/fs/file.c#L602)
@@ -68,12 +68,12 @@ spec:
     syscall: false
 ```
 
-{{< note >}}
+:::note
 Notice the `syscall` field, specific to a `kprobe` spec, with default value
 `false`, that indicates whether Tetragon will hook a syscall or just a regular
 kernel function. Tetragon needs this information because syscall and kernel
 function use a [different ABI](https://gitlab.com/x86-psABIs/x86-64-ABI).
-{{< /note >}}
+:::
 
 
 Kprobes calls can be defined independently in different policies,
@@ -156,7 +156,7 @@ spec:
 Fentry specs support the same `args`, `returnArg`, and `selectors` fields as
 kprobes, so you can use argument filtering and in-kernel selectors in the same
 way. For details on selectors, see the
-[Selectors]({{< ref "/docs/concepts/tracing-policy/selectors" >}}) documentation.
+[Selectors](/docs/docs/concepts/tracing-policy/selectors) documentation.
 
 ## Tracepoints
 
@@ -433,7 +433,7 @@ and returns a string starting with "sudo", which can be useful for monitoring po
 sensitive command input.
 
 For more details on available selectors and their usage, see the
-[Selectors]({{< ref "/docs/concepts/tracing-policy/selectors" >}}) documentation.
+[Selectors](/docs/docs/concepts/tracing-policy/selectors) documentation.
 
 ### Target Binary Digest Verification
 
@@ -488,7 +488,7 @@ The following digest types are supported:
 - sha512
 - build-id (found in the ELF note section named `.note.gnu.build-id`)
 
-{{< caution >}}
+:::caution
 When a uprobe is attached, the kernel keeps track of the target by its
 inode. It's best practice for installation software (such as rpm, deb,
 install, tar) to unlink a pre-existing target before installing a new
@@ -505,7 +505,7 @@ not retain the inode of the target binary that they want to update.
 If the user wants the policy to apply to a new version of the binary
 post-installation, they need to reload the policy after installation in
 order to attach to the new version of the binary.
-{{< /caution >}}
+:::
 
 ## USDTs
 
@@ -708,11 +708,11 @@ additional fields named `returnCopy` and `sizeArgIndex` available:
   iovec *, vlen)` syscall, then `iovec` has a size of `vlen`, which is going to
   be the third argument.
 
-{{< caution >}}
+:::caution
 `sizeArgIndex` is inconsistent at the moment and does not take the index, but
 the number of the index (or index + 1). So if the size is the third argument,
 index 2, the value should be 3.
-{{< /caution >}}
+:::
 
 These flags can be combined, see the example below.
 
@@ -772,11 +772,11 @@ data.
 
 ### Attribute resolution
 
-{{< caution >}}
+:::caution
 - For kprobes, available only from kernel version 5.4.
 - For LSM, available only from kernel version 5.7.
 - For uprobes, this functionality is not supported.
-{{< /caution >}}
+:::
 
 This functionality allows you to dynamically extract specific attributes from
 kernel structures passed as parameters to Kprobes and LSM hooks.
@@ -812,13 +812,13 @@ spec:
 - `resolve` flag : Using the resolve flag, the policy extracts the
 `mm.owner.real_parent.comm` field, representing the parent process's comm.
 
-{{< caution >}}
+:::caution
 - This feature requires you to read the kernel structure definitions to find what you're
 looking for in the hook parameter attributes. For instance, if you want to have a look
 at what is available inside `struct linux_binprm`, take a look at its definition in
 [include/linux/binfmts.h](https://elixir.bootlin.com/linux/v6.12.5/source/include/linux/binfmts.h#L18)
 - Some structures are dynamic. This means that they may change at runtime.
-{{< /caution >}}
+:::
 
 Tetragon can also handle some structures such as `struct file` or `struct
 path` and a few others. This means you can also extract the whole struct, if it is
@@ -948,11 +948,11 @@ spec:
       resolve: "salg_name"
 ```
 
-{{< caution >}}
+:::caution
 When `btfTypeModule` is set, Tetragon first tries to read module BTF exposed by
 the kernel in `/sys/kernel/btf/<module>`. If that is not available, Tetragon
 fails to load the policy.
-{{< /caution >}}
+:::
 
 If `btfTypeModule` is omitted, Tetragon searches the main kernel BTF first. For
 hooks that belong to a loaded module, Tetragon also tries that hook's module BTF.
@@ -1025,7 +1025,7 @@ process that actually owns the socket. This can be done by adding a `returnArgAc
 to the call. Use `returnArg` to include the return value in the event output;
 `returnArgAction` is only for the socket-tracking actions `TrackSock` and
 `UntrackSock`.
-See [`TrackSock`](/docs/concepts/tracing-policy/selectors/#tracksock-action) and [`UntrackSock`](/docs/concepts/tracing-policy/selectors/#untracksock-action).
+See [`TrackSock`](/docs/docs/concepts/tracing-policy/selectors/#tracksock-action) and [`UntrackSock`](/docs/docs/concepts/tracing-policy/selectors/#untracksock-action).
 
 ```yaml
 - call: "sk_alloc"
@@ -1060,11 +1060,11 @@ Socket tracking has the following limitations:
   process exits while another continues using the socket, the mapping references
   a process that no longer exists.
 
-{{< warning >}}
+:::warning
 The LRU map overflow and socket sharing limitations have security implications.
 An adversary could overflow the map to evade attribution, or exploit socket
 sharing to obscure the true source of network activity.
-{{< /warning >}}
+:::
 
 
 ## Lists
@@ -1297,11 +1297,11 @@ contain selectors definitions, which can be used in `kprobes`, `tracepoints`,
 `uprobes`, `usdts`, and `lsmhooks` as a part of their selectors by macro name.
 The content of the macro will be  substituted in target selectors.
 
-{{< caution >}}
+:::caution
 The same field cannot be present in a macro definition and in a policy selector
 that uses the macro. See more info in [macros
-limitations](/docs/concepts/tracing-policy/hooks/#macros-limitations).
-{{< /caution >}}
+limitations](/docs/docs/concepts/tracing-policy/hooks/#selectors-macros).
+:::
 
 Consider we have tracing policy, where we want to intercept kernel functions
 `call_1`, `call_2`, `call_3`, but target binary must not be located in
@@ -1395,7 +1395,7 @@ spec:
       macros: ["myappExclusion"]
 ```
 
-### Limitations {#macros-limitations}
+### Limitations
 
 Having a same field in a hook selector and in a macro definition, or using
 different macros with same fields defined will result in an error.

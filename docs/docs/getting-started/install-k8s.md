@@ -3,14 +3,16 @@ title: "Quick Kubernetes Install"
 weight: 1
 description: "Discover and experiment with Tetragon in a kubernetes environment"
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 ### Create a cluster
 
 If you don’t have a Kubernetes Cluster yet, you can use the instructions below
 to create a Kubernetes cluster locally or using a managed Kubernetes service:
 
-{{< tabpane text=true >}}
-{{% tab GKE %}}
+<Tabs>
+<TabItem value="gke" label="GKE">
 
 The following commands create a single node Kubernetes cluster using [Google
 Kubernetes Engine](https://cloud.google.com/kubernetes-engine). See
@@ -23,8 +25,8 @@ export ZONE="us-west2-a"
 gcloud container clusters create "${NAME}" --zone ${ZONE} --num-nodes=1
 gcloud container clusters get-credentials "${NAME}" --zone ${ZONE}
 ```
-{{% /tab %}}
-{{% tab AKS %}}
+</TabItem>
+<TabItem value="aks" label="AKS">
 
 The following commands create a single node Kubernetes cluster using [Azure
 Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/). See
@@ -38,8 +40,8 @@ az group create --name "${AZURE_RESOURCE_GROUP}" -l westus2
 az aks create --resource-group "${AZURE_RESOURCE_GROUP}" --name "${NAME}"
 az aks get-credentials --resource-group "${AZURE_RESOURCE_GROUP}" --name "${NAME}"
 ```
-{{% /tab %}}
-{{% tab EKS %}}
+</TabItem>
+<TabItem value="eks" label="EKS">
 
 The following commands create a single node Kubernetes cluster with `eksctl` using [Amazon Elastic
 Kubernetes Service](https://aws.amazon.com/eks/). See [eksctl installation](https://github.com/eksctl-io/eksctl#installation)
@@ -49,9 +51,9 @@ for instructions on how to install `eksctl` and prepare your account.
 export NAME="$(whoami)-$RANDOM"
 eksctl create cluster --name "${NAME}"
 ```
-{{% /tab %}}
+</TabItem>
 
-{{% tab "Kind" %}}
+<TabItem value="kind" label="Kind">
 
 Tetragon's correct operation depends on access to the host `/proc` filesystem. The following steps
 configure kind and Tetragon accordingly when using a Linux system. The following commands create a single node Kubernetes cluster using `kind` that is properly configured for Tetragon.
@@ -69,9 +71,9 @@ EOF
 kind create cluster --config kind-config.yaml
 EXTRA_HELM_FLAGS=(--set tetragon.hostProcPath=/procHost) # flags for helm install
 ```
-{{% /tab %}}
+</TabItem>
 
-{{< /tabpane >}}
+</Tabs>
 
 The commands in this Getting Started guide assume you use a single-node
 Kubernetes cluster. If you use a cluster with multiple nodes, be aware that
@@ -100,7 +102,7 @@ To explore Tetragon it is helpful to have a sample workload. Here we use Cilium'
 but any workload would work equally well:
 
 ```shell
-kubectl create -f {{< demo-app-url >}}
+kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.15.3/examples/minikube/http-sw-app.yaml
 ```
 
 Before going forward, verify that all pods are up and running - it might take
@@ -122,4 +124,4 @@ xwing                        1/1     Running   0          10s
 
 ## What's Next
 
-Check for [execution events]({{< ref "/docs/getting-started/execution" >}}).
+Check for [execution events](/docs/docs/getting-started/execution).

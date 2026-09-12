@@ -49,8 +49,8 @@ kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c export-stdout 
 ```
 
 Example `process_exec` and `process_exit` events can be:
-<details><summary> Process Exec Event </summary>
-<p>
+<details>
+<summary> Process Exec Event </summary>
 
 ```json
 {
@@ -116,10 +116,10 @@ Example `process_exec` and `process_exit` events can be:
 }
 ```
 
-</p>
 </details>
 
-<details><summary> Process Exit Event </summary>
+<details>
+<summary> Process Exit Event </summary>
 <p>
 
 ```json

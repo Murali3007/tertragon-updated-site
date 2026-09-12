@@ -6,25 +6,25 @@ description: "Advanced Process Execution monitoring using Tracing Policies"
 
 ## Monitor ELF or Flat binaries execution
 
-Advanced process execution can be performed by using [Tracing Policies](/docs/concepts/tracing-policy) to monitor
+Advanced process execution can be performed by using [Tracing Policies](/docs/docs/concepts/tracing-policy/example) to monitor
 the [execve system call](https://man7.org/linux/man-pages/man2/execve.2.html) path.
 
 If we want to monitor execution of Executable and Linkable Format (ELF) or flat binaries
 before they are actually executed. Then the [process-exec-elf-begin](https://github.com/cilium/tetragon/blob/main/examples/tracingpolicy/process-exec/process-exec-elf-begin.yaml) tracing policy is a good first choice.
 
-{{< note >}}
+:::note
 The [process-exec-elf-begin](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/process-exec/process-exec-elf-begin.yaml) tracing policy, will not report the
 different binary format handlers or scripts being executed, but will report
 the final ELF or flat binary, like the shebang handler.
 
 To report those another tracing policy can be used.
-{{</ note >}}
+:::}}
 
 Before going forward, verify that all pods are up and running, ensure you
 deploy our Demo Application to explore the Security Observability Events:
 
 ```bash
-kubectl create -f {{< demo-app-url >}}
+kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.15.3/examples/minikube/http-sw-app.yaml
 ```
 
 It might take several seconds for some pods until they satisfy all the dependencies:
@@ -65,7 +65,7 @@ And execute some commands:
 id
 ```
 
-The `tetra` CLI will generate the following [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events:
+The `tetra` CLI will generate the following [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events:
 
 ```json
 {
@@ -151,7 +151,7 @@ The `tetra` CLI will generate the following [ProcessKprobe]({{< ref "/docs/refer
 ```
 
 In addition to the Kubernetes Identity and process metadata,
-[ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}})
+[ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe)
 events contain the binary being executed. In the above case they are:
 
 - `function_name`: where we are hooking into the kernel to read the binary that is being executed.

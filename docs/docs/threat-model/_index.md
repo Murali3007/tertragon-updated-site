@@ -15,16 +15,19 @@ observability tool that utilizes eBPF to deliver deep visibility into system
 behavior and enforce security policies at the kernel level.  A good
 understanding of this threat model requires familiarity with Kubernetes
 architectural concepts, eBPF fundamentals, and [Tetragon's overall
-architecture]({{< ref "/docs/overview" >}}). The model addresses multiple
+architecture](/docs/docs/getting-started/execution/overview). The model addresses multiple
 deployment scenarios, including Kubernetes-based deployments using DaemonSets,
 standalone containerized agents, and systemd-managed service deployments on
 individual hosts.
 
-{{< figure src="/images/smart_observability.png"
-caption="Tetragon Overview Diagram"
-width=800px
-alt="A diagram showing Tetragon capabilities"
->}}
+<figure>
+  <img
+    src="/tertragon-updated-site/images/smart_observability.png"
+    width="800px"
+    alt="A diagram showing Tetragon capabilities"
+  />
+  <figcaption>Tetragon Overview Diagram</figcaption>
+</figure>
 
 This analysis evaluates threats associated with five distinct attacker profiles,
 each representing varying levels of access and privilege within the system.
@@ -38,13 +41,13 @@ practices](https://kubernetes.io/docs/tasks/administer-cluster/securing-a-cluste
 where applicable. This baseline assumption enables a focus on threats specific
 to Tetragon’s design and operation, rather than general system vulnerabilities.
 
-{{< note >}}
+:::note
 There is a security/visibility risk in using the wrong hook points when
 writing tetragon tracing policies, this however does not indicate a security
 vulnerability in Tetragon itself. Operators are advised to ensure that chosen
 hook points are validated carefully to achieve the desired security/visibility
 objective.
-{{< /note >}}
+:::
 
 ## Threat Surface Analysis
 
@@ -70,9 +73,7 @@ high-value target for attackers seeking to evade detection or manipulate
 security controls.
 
 In Kubernetes deployments, configuration is primarily managed via two custom
-resource definitions (CRDs): [TracingPolicy]({{< ref
-"/docs/reference/tracing-policy/" >}}) and [TracingPolicyNamespaced]({{< ref
-"/docs/concepts/tracing-policy/k8s-filtering/#namespace-filtering" >}}).
+resource definitions (CRDs): [TracingPolicy](/docs/docs/reference/tracing-policy/) and [TracingPolicyNamespaced](/docs/docs/concepts/tracing-policy/example/k8s-filtering/#namespace-filtering).
 
 These CRDs enable centralized policy management via the Kubernetes API but
 require strict RBAC to prevent unauthorized policy changes. In standalone
@@ -87,7 +88,7 @@ isolation compared to network-based listening. However, both still require
 rigorous access control measures to prevent unauthorized interception of event
 streams.
 
-[Event export]({{< ref "docs/concepts/events" >}}) mechanisms constitute a
+[Event export](/docs/docs/concepts/events/events) mechanisms constitute a
 significant aspect of the agent's attack surface. Tetragon can emit events via
 multiple channels, including standard output streams for Kubernetes container
 logging, JSON log files, and gRPC streams over network ports. Each export method
@@ -128,10 +129,14 @@ measures and monitoring mechanisms.
 
 ### Kubernetes Workload Attacker
 
-{{< figure src="./kubernetes-workload.png"
-caption="Kubernetes Workload Attacker Diagram"
-width=800px alt="workload attacker illustration"
->}}
+<figure>
+  <img
+    src="/tertragon-updated-site/images/kubernetes-workload.png"
+    width="800px"
+    alt="workload attacker illustration"
+  />
+  <figcaption>Kubernetes Workload Attacker Diagram</figcaption>
+</figure>
 
 Consider an adversary who has compromised an application in the cluster and can
 execute arbitrary code in that container's context. Such scenarios typically
@@ -162,7 +167,7 @@ operational controls.
 
 Proactive monitoring can mitigate workload-based denial-of-service attacks.
 Operators are encouraged to monitor and alert on dropped events via [Tetragon
-Health Metrics]({{< ref "/docs/installation/metrics/" >}}). Some relevant
+Health Metrics](/docs/docs/installation/metrics/). Some relevant
 metrics include:
 
 - `tetragon_events_total`
@@ -182,11 +187,14 @@ event-processing resources.
 
 ### Limited Privilege Host Attacker
 
-{{< figure src="./limited-host.png"
-caption="Limited Privilege Host Attacker Diagram"
-width=800px
-alt="Limited privilege host attacker illustration"
->}}
+<figure>
+  <img
+    src="/tertragon-updated-site/images/limited-host.png"
+    width="800px"
+    alt="Limited privilege host attacker illustration"
+  />
+  <figcaption>Limited Privilege Host Attacker Diagram</figcaption>
+</figure>
 
 A limited-privilege host attacker can escalate beyond container boundaries and
 access host namespaces and resources, but lacks the root privileges required to
@@ -248,8 +256,7 @@ model.
   matching. The default Unix socket permissions should remain unchanged. 
 - Users using network-based gRPC access should critically assess the need for
   this configuration and, if feasible, [transition to Unix socket-based access
-  with appropriate filesystem permissions]({{< ref
-  "/docs/reference/daemon-configuration/#restrict-grpc-api-access" >}}).
+  with appropriate filesystem permissions](/docs/docs/reference/daemon-configuration/#restrict-grpc-api-access).
 - Event log files require similarly strict permission management. The
   `0600(rw-------)` permissions appropriately restrict access, and operators
   should resist any pressure to relax these restrictions even for operational
@@ -259,10 +266,14 @@ model.
 
 ## Kubernetes API Server Attacker
 
-{{< figure src="./kubernetes-api.png"
-caption="Kubernetes API Server Attacker Diagram" width=800px
-alt="Kubernetes API Server Attacker illustration"
->}}
+<figure>
+  <img
+    src="/tertragon-updated-site/images/kubernetes-api.png"
+    width="800px"
+    alt="Kubernetes API Server Attacker illustration"
+  />
+  <figcaption>Kubernetes API Server Attacker Diagram</figcaption>
+</figure>
 
 An attacker who compromises the Kubernetes API server or acquires credentials
 for API access obtains substantial control over Tetragon's operations in
@@ -299,10 +310,14 @@ security model. As a result:
 
 ## Root-Equivalent Host Attacker
 
-{{< figure src="./root.png"
-caption="Root-Equivalent Host Attacker Diagram" width=800px
-alt="Root-Equivalent Host Attacker Diagram"
->}}
+<figure>
+  <img
+    src="/tertragon-updated-site/images/root.png"
+    width="800px"
+    alt="Root-Equivalent Host Attacker Diagram"
+  />
+  <figcaption>Root-Equivalent Host Attacker Diagram</figcaption>
+</figure>
 
 An attacker with root privileges on a host running Tetragon gains complete
 control of the system, rendering all local security controls ineffective. This
@@ -346,10 +361,14 @@ privileges for cluster-wide policy manipulation.
 
 ## Network Attacker
 
-{{< figure src="./kubernetes-network.png"
-caption="Network Attacker Diagram"
-width=800px alt="Network Attacker Diagram"
->}}
+<figure>
+  <img
+    src="/tertragon-updated-site/images/kubernetes-network.png"
+    width="800px"
+    alt="Network Attacker Diagram"
+  />
+  <figcaption>Network Attacker Diagram</figcaption>
+</figure>
 
 A network attacker with man-in-the-middle capabilities can intercept, inspect,
 and potentially modify traffic between Tetragon components and external systems.

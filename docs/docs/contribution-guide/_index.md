@@ -17,9 +17,9 @@ to the Tetragon project, we value all kinds of contributions.
 For example, actions that can greatly improve Tetragon and contribute to its
 success could be:
 - Write a blog post about Tetragon or one of its use cases, we will be happy to
-  add a reference to it in [resources]({{< ref "/docs/resources" >}}).
+  add a reference to it in [resources](/docs/docs/getting-started/execution/resources).
 - Talk about Tetragon during conferences or meetups, similarly, as a blog post,
-  video recordings can be added to [resources]({{< ref "/docs/resources" >}}).
+  video recordings can be added to [resources](/docs/docs/getting-started/execution/resources).
 - Share your usage of Tetragon on social platforms, and add yourself to the
   [user list of the Cilium project](https://github.com/cilium/cilium/blob/main/USERS.md)
   as a Tetragon user.
@@ -58,7 +58,7 @@ merged upstream.
    git remote add upstream https://github.com/cilium/tetragon.git
    ```
 
-5. Prepare your [development setup]({{< ref "/docs/contribution-guide/development-setup" >}}).
+5. Prepare your [development setup](/docs/docs/contribution-guide/development-setup).
 
 6. Check out GitHub [good first issues](https://github.com/cilium/tetragon/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
    to find something to work on. If this is your first Tetragon issue, try to
@@ -66,13 +66,13 @@ merged upstream.
    external help. Also avoid assigning too many issues to yourself (see [Don't
    Lick the Cookie!](https://www.redhat.com/en/blog/dont-lick-cookie)).
 
-7. Follow the steps in [making changes]({{< ref "/docs/contribution-guide/making-changes" >}})
+7. Follow the steps in [making changes](/docs/docs/contribution-guide/making-changes)
    to start contributing.
 
-8. Learn how to [run the tests]({{< ref "/docs/contribution-guide/running-tests" >}})
-   or how to [preview and contribute to the docs]({{< ref "/docs/contribution-guide/documentation" >}}).
+8. Learn how to [run the tests](/docs/docs/contribution-guide/running-tests)
+   or how to [preview and contribute to the docs](/docs/docs/contribution-guide/documentation).
 
-9. Learn how to [submit a pull request]({{< ref "/docs/contribution-guide/submitting-a-pull-request" >}})
+9. Learn how to [submit a pull request](/docs/docs/contribution-guide/submitting-a-pull-request)
    to the project.
 
 10. Please accept our gratitude for taking the time to improve Tetragon! :)

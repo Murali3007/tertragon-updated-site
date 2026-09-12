@@ -3,6 +3,8 @@ title: "Development setup"
 weight: 1
 description: "This will help you getting started with your development setup to build Tetragon"
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 ## Building and running Tetragon
 
@@ -64,10 +66,10 @@ Notes:
    programs (which were built in the `make` step above).
 
 2. If Tetragon fails with an error `"BTF discovery: candidate btf file does not
-   exist"`, then make sure that your kernel support [BTF](#btf-requirement),
+   exist"`, then make sure that your kernel support [BTF](/docs/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file),
    otherwise place a BTF file where Tetragon can read it and specify its path
    with the `--btf` flag. See more about that
-   [in the FAQ]({{< ref "/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file" >}}).
+   [in the FAQ](/docs/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file).
 
 ## Building and running a Docker image
 
@@ -124,8 +126,8 @@ operate in the full build.
 
 You can find some configuration examples below.
 
-{{< tabpane text=true >}}
-{{% tab vim %}}
+<Tabs>
+<TabItem value="vim" label="vim">
 
 For neovim lsp, you can use:
 
@@ -145,8 +147,8 @@ let g:go_build_tags = 'nok8s'
 There is also the `:GoBuildTags` convenience command to change or remove build
 tags.
 
-{{% /tab %}}
-{{< /tabpane >}}
+</TabItem>
+</Tabs>
 
 
 ## Local Development with Apple Silicon Mac
@@ -154,16 +156,16 @@ tags.
 Use [Lima](https://lima-vm.io/) to create a Linux VM if you are using a Mac with
 Apple silicon. For example:
 
-{{< warning >}}
+:::warning
 The following commands create a VM, and make the mount for your home directory
 on the host writable. Tweak `~/.lima/tetragon/lima.yaml` if you prefer to only
 mount Tetragon directory as writable.
-{{< /warning >}}
+:::
 
-{{< note >}}
+:::note
 The following commands install Golang 1.23. You may want to install a newer
 version if it's available in https://launchpad.net/~longsleep/+archive/ubuntu/golang-backports.
-{{< /note >}}
+:::
 
 First create a VM using [Lima](https://lima-vm.io/):
 
@@ -192,5 +194,5 @@ make -j3 tetragon-bpf tetragon tetra
 
 ## What's next
 
-- See how to [make your first changes](/docs/contribution-guide/making-changes).
+- See how to [make your first changes](/docs/docs/contribution-guide/making-changes).
 

@@ -4,7 +4,7 @@ weight: 5
 description: "Configuring enforcement in tracing policies"
 ---
 
-Beyond monitoring, Tetragon tracing policies include [enforcement]({{< ref "/docs/concepts/enforcement" >}}) actions.
+Beyond monitoring, Tetragon tracing policies include [enforcement](/docs/docs/concepts/enforcement/persistent-enforcement) actions.
 Configuring the mode of a policy allows you to disable enforcement in a policy, without modifying
 the policy itself.
 

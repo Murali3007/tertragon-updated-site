@@ -20,7 +20,7 @@ the following questions:
 First, verify that your k8s environment is set up and that all pods are up and running, and deploy the demo application:
 
 ```shell
-kubectl create -f {{< demo-app-url >}}
+kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.15.3/examples/minikube/http-sw-app.yaml
 ```
 
 It might take several seconds until all pods are Running:
@@ -41,13 +41,13 @@ kube-system          tetragon-sdwv6                               2/2     Runnin
 
 ### Monitor Capability Checks
 
-We use the [creds-capability-usage](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/process-credentials/creds-capability-usage.yaml) tracing policy which generates [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events.
+We use the [creds-capability-usage](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/process-credentials/creds-capability-usage.yaml) tracing policy which generates [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events.
 
-{{< note >}}
+:::note
 Tracing policies as the one used here, may emit a high number of events.
 
-To reduce events, the [creds-capability-usage](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/process-credentials/creds-capability-usage.yaml) rate limits events to 1 minute. More details about rate-limiting can be found in the [tracing policy documentation]({{< ref "docs/concepts/tracing-policy#actions-filter" >}}).
-{{< /note >}}
+To reduce events, the [creds-capability-usage](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/process-credentials/creds-capability-usage.yaml) rate limits events to 1 minute. More details about rate-limiting can be found in the [tracing policy documentation](/docs/docs/concepts/tracing-policy/selectors#actions-filter).
+:::
 
 Apply the [creds-capability-usage](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/process-credentials/creds-capability-usage.yaml) policy:
 ```shell
@@ -75,7 +75,7 @@ The output should be similar to:
 dmesg: klogctl: Operation not permitted
 ```
 
-The `tetra` cli will generate the following [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events:
+The `tetra` cli will generate the following [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events:
 
 ```json
 {
@@ -211,18 +211,18 @@ The `tetra` cli will generate the following [ProcessKprobe]({{< ref "/docs/refer
 }
 ```
 
-In addition to the Kubernetes Identity and process metadata from exec events, [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events contain the arguments of the observed system call. In the above case they are:
+In addition to the Kubernetes Identity and process metadata from exec events, [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events contain the arguments of the observed system call. In the above case they are:
 
 * `function_name`: that is the `cap_capable` kernel function.
 
-* `user_ns_arg`: is the [user namespace]({{< ref "/docs/reference/grpc-api#usernamespace" >}}) where the capability is required.
+* `user_ns_arg`: is the [user namespace](/docs/docs/reference/grpc-api#usernamespace) where the capability is required.
 
    * `level`: is the nested level of the user namespace. Here it is zero which indicates the initial user namespace.
    * `uid`: is the user ID of the owner of the user namespace.
    * `gid`: is the group ID of the owner of the user namespace.
-   * [`ns`]({{< ref "/docs/reference/grpc-api#namespace" >}}): details the information about the namespace. `is_host` indicates that the target user namespace where the capability is required is the host namespace.
+   * [`ns`](/docs/docs/reference/grpc-api#namespace): details the information about the namespace. `is_host` indicates that the target user namespace where the capability is required is the host namespace.
 
-* `capability_arg`: is the [capability]({{< ref "/docs/reference/grpc-api#kprobecapability" >}}) required to perform the operation. In this example reading the kernel ring buffer.
+* `capability_arg`: is the [capability](/docs/docs/reference/grpc-api#kprobecapability) required to perform the operation. In this example reading the kernel ring buffer.
 
    * `value`: is the integer number of the required capability.
    * `name`: is the name of the required capability. Here it is the `CAP_SYSLOG`.

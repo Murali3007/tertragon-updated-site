@@ -126,9 +126,9 @@ The available operators for `matchArgs` are:
 - `FileType`
 - `NotFileType`
 
-{{< warning >}}
+:::warning
 The `CelExpr` `MatchArgs` operator has been deprecated. Please use the `MatchCEL` selector instead.
-{{< /warning >}}
+:::
 
 **Further examples**
 
@@ -233,10 +233,10 @@ range from 0 to 31. All filters must match. Tetragon caches at most the first
 them. Data beyond this limit is truncated, and only arguments fully contained
 in the cache can match.
 
-{{< caution >}}
+:::caution
 Command-line arguments are user-controlled and can be reordered or obfuscated,
 so account for alternate forms when using this filter for enforcement.
-{{< /caution >}}
+:::
 
 The `matchCmdArgs` filter requires support for large BPF programs, normally
 available on Linux kernel version 5.3 and later.
@@ -278,7 +278,7 @@ selectors:
 ```
 
 Nested fields can be accessed through the `.` separator, as described
-in [Attribute resolution]({{< ref "/docs/concepts/tracing-policy/hooks#attribute-resolution" >}}).
+in [Attribute resolution](/docs/docs/concepts/tracing-policy/hooks#attribute-resolution).
 In the following example we extract the UID of the current task via
 `cred.uid.val` and filter for non-system users (UID greater than
 `1000`), hooked at `security_bprm_committed_creds` — an LSM hook
@@ -476,9 +476,9 @@ while the whole `kprobe` call is the following:
 
 ### Scripts with shebangs
 
-{{< caution >}}
+:::caution
 `matchBinaries` matches against the `interpreter`, not the script path.
-{{< /caution >}}
+:::
 
 When executing a script with a shebang (i.e. `#!/usr/bin/python3`), Linux actually runs the
 interpreter and passes the script as an argument. Current implementation of `matchBinaries` filters based on the interpreter path (i.e. `/usr/bin/python3`) and not the script name (i.e. `/opt/scripts/my_script.py`).
@@ -503,10 +503,10 @@ Match the interpreter instead:
 
 ## Parent binaries filter
 
-{{< warning >}}
+:::warning
 `matchParentBinaries` selector can be used only with BPF map `parents_map` enabled (option `--parents-map-enabled`), which adds
 additional memory overhead. 
-{{< /warning >}}
+:::
 
 Parent binaries filter provides filtering based on current process parent
 binary path, which works similarly to the `matchBinaries` filter. It can be
@@ -841,7 +841,7 @@ define a `hostSelector`, a `podSelector`, and a `containerSelector`.
 
 This works in a similar way to global workload selectors such as `spec.hostSelector`,
 `spec.podSelector`, and `spec.containerSelector`. More details on these
-can be found in [Filtering semantics]({{< ref "/docs/concepts/tracing-policy/k8s-filtering/#filtering-semantics" >}}).
+can be found in [Filtering semantics](/docs/docs/concepts/tracing-policy/k8s-filtering/#filtering-semantics).
 
 Loading a tracing policy with `matchWorkloads` outside of Kubernetes will fail
 in a similar way to global workload selectors.
@@ -938,12 +938,12 @@ matches. They are defined under `matchActions` and currently, the following
 - [Notify Enforcer action](#notify-enforcer-action)
 - [Set action](#set-action)
 
-{{< note >}}
+:::note
 `Sigkill`, `Override`, `Post`,
 `TrackSock` and `UntrackSock` are
 executed directly in the kernel BPF code while `GetUrl` and `DnsLookup` are
 happening in userspace after the reception of events.
-{{< /note >}}
+:::
 
 
 ### Sigkill action
@@ -982,10 +982,10 @@ process is spawned in the container PID namespace and is not a child of PID 1.
     - action: Sigkill
 ```
 
-{{< caution >}}
-Please consult the [Enforcement]({{<ref "/docs/concepts/enforcement" >}}) section if you plan to use
+:::caution
+Please consult the [Enforcement](/docs/docs/concepts/enforcement/persistent-enforcement) section if you plan to use
 this action for enforcement.
-{{< /caution >}}
+:::
 
 ### Signal action
 
@@ -1024,10 +1024,10 @@ The difference is to use the signal action with `SIGKILL(9)` signal.
       argSig: 9
 ```
 
-{{< caution >}}
-Please consult the [Enforcement]({{<ref "/docs/concepts/enforcement" >}}) section if you plan to use
+:::caution
+Please consult the [Enforcement](/docs/docs/concepts/enforcement/persistent-enforcement) section if you plan to use
 this action for enforcement.
-{{< /caution >}}
+:::
 
 
 ### Override action
@@ -1075,7 +1075,7 @@ kprobes:
       argError: -1
 ```
 
-{{< note >}}
+:::note
 `Override` uses the kernel error injection framework and is only available
 on kernels compiled with `CONFIG_BPF_KPROBE_OVERRIDE` configuration option.
 
@@ -1085,18 +1085,18 @@ with `ALLOW_ERROR_INJECTION()` in the kernel source, and can be identified by
 reading the file `/sys/kernel/debug/error_injection/list`.
 
 Starting from kernel version `5.7` overriding `security_` hooks is also possible.
-{{< /note >}}
+:::
 
-{{< caution >}}
+:::caution
 For kernel developers: if you want to override your kernel functions then
 ensure they properly follow the [Error Injectable Functions](https://docs.kernel.org/fault-injection/fault-injection.html#error-injectable-functions) guide.
-{{< /caution >}}
+:::
 
 #### Override action for uprobe
 
-{{< warning >}}
+:::warning
 Beware, here be dragons!!! Use with caution, it could easily crash traced application.
-{{< /warning >}}
+:::
 
 Similar to kprobe, the uprobe `Override` action allows to modify the return value
 of user space call with `argError` argument, like:
@@ -1160,10 +1160,10 @@ There are, however, some restrictions:
 - new symbol must be already present in the binary;
 - new symbol must have the same signature as the original symbol.
 
-{{< warning >}}
+:::warning
 Since tetragon enforces no verification for the last point, this can lead to
 crashing the traced application.
-{{< /warning >}}
+:::
 
 It's possible to override specific registers with arbitrary value with `argRegs`
 argument, like:
@@ -1193,9 +1193,9 @@ following types:
 - dereference of register `rbp=(%rsp)`
 - dereference of register plus offset `rsp=8(%rsp)`
 
-{{< note >}}
+:::note
 This interface is likely to be changed in the future.
-{{< /note >}}
+:::
 
 ### GetUrl action
 
@@ -1275,7 +1275,7 @@ kprobes:
         userStackTrace: true
 ```
 
-{{< caution >}}
+:::caution
 By default Tetragon does not expose the linear addresses from kernel space or
 user space, you need to enable the flag `--expose-stack-addresses` to get the
 addresses along the rest.
@@ -1286,7 +1286,7 @@ break kernel address space layout randomization (KASLR) so only privileged users
 should be able to enable this feature and read events containing stack traces.
 The same thing we can say about retrieving address for user mode processes.
 Stack trace addresses can be used to bypass address space layout randomization (ASLR).
-{{< /caution >}}
+:::
 
 Once loaded, events created from this policy will contain a new `kernel_stack_trace`
 field on the `process_kprobe` event with an output similar to:
@@ -1340,7 +1340,7 @@ beginning of the binary module. "module" is the absolute path of the binary file
 to which address belongs. "symbol" is the function symbol name. "symbol" may be missing
 if the binary file is stripped.
 
-{{< note >}}
+:::note
 Information from `procfs (/proc/<pid>/maps)` is used to symbolize user
 stack trace addresses. Stack trace addresses extraction and symbolizing are async.
 It might happen that process is terminated and the `/proc/<pid>/maps` file will be
@@ -1349,7 +1349,7 @@ for very short living process might be not collected.
 
 For Linux kernels before 5.15 user stack traces may be incomplete (some stack
 traces entries may be missed).
-{{< /note >}}
+:::
 
 This output can be enhanced in a more human friendly using the `tetra getevents
 -o compact` command. Indeed, by default, it will print the stack trace along
@@ -1373,10 +1373,10 @@ User space:
 The printing format for kernel stack trace is `"0x%x: %s+0x%x", address, symbol, offset`.
 The printing format for user stack trace is `"0x%x: %s (%s+0x%x)", address, symbol, module, offset`.
 
-{{< note >}}
+:::note
 Compact output will display missing addresses as `0x0`, see the above note on
 `--expose-stack-addresses` for more info.
-{{< /note >}}
+:::
 
 #### File hash collection with IMA
 
@@ -1424,14 +1424,14 @@ and all firmware loaded. Additionally, a files opened for read by root are measu
 `ima_policy=` can be specified multiple times, and the result is the union of the policies.
 To know more about `ima_policy` you can follow this [link](https://ima-doc.readthedocs.io/en/latest/ima-policy.html).
 
-{{< note >}}
+:::note
 Hash calculation with IMA subsystem and LSM BPF is supported from 5.11 kernel version.
 For kernel versions below 6.1 is recommended to mount filesystems with `iversion`. Mounting with `iversion`
 helps IMA not recalculating hash if file is not changed. From kernel 6.1 `iversion` is by default.
 It is not necessary to enable IMA to calculate hashes with Tetragon if you have kernel 6.1+.
 But hashes will be recalculated no matter if file is not changed. See implementation details of
 `bpf_ima_file_hash` helper.
-{{< /note >}}
+:::
 
 The provided example of `TracingPolicy` collects hashes of executed binaries from
 `zsh` and `bash` interpreters:
@@ -1580,11 +1580,11 @@ executed.
   type: "sock"
 ```
 
-{{< caution >}}
+:::caution
 Whenever we would like to track a socket with a `TrackSock` block,
 there should be a matching `UntrackSock` block, otherwise the BPF map will be
 broken.
-{{< /caution >}}
+:::
 
 Socket tracking is only available on kernel >=5.3.
 
@@ -2168,7 +2168,7 @@ exist.
 - Max MatchArgs per selector 5 (one per index)
 - Max MatchArg Values per MatchArgs 4 (for operators like `Equal`, `NotEqual`,
   `GT`, `LT`, etc.)
-- Max file match values (using `fd` or `file` arg): 8 on kernels ≥5.3, 2 on kernels <5.3
+- Max file match values (using `fd` or `file` arg): 8 on kernels ≥5.3, 2 on kernels &lt;5.3
 - String prefix max length: 256 chars
 - String postfix max length: 128 chars
 
@@ -2176,13 +2176,13 @@ For larger sets of values, consider using the `InMap` or `NotInMap`
 operators which store values in a BPF map.
 These are limited only by the amount of available memory.
 
-{{< caution >}} 
+:::caution 
 The `InMap` and `NotInMap` operators also support the range notation described
 for the `InRange` operator. However, using range notation with `InMap` or
 `NotInMap` consumes more memory, because each value in the range is added
 individually to the map. For large ranges, prefer the `InRange` operator
 instead.
-{{< /caution >}}
+:::
 
 
 ## Return Actions filter

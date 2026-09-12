@@ -4,32 +4,34 @@ weight: 3
 description: >
   Library of policies that implement Tetragon observability mechanisms.
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 
 ## Index
 
 ### Security Sensitive Events
 
-- [Binary Execution in /tmp]({{< ref "#tmp-execs" >}})
-- [sudo Monitoring]({{< ref "#sudo" >}})
-- [Privileges Escalation via SUID Binary Execution]({{< ref "#privileges-suid" >}})
-- [Privileges Escalation via File Capabilities Execution]({{< ref "#privileges-fscaps" >}})
-- [Privileges Escalation via Setuid system calls]({{< ref "#privileges-setuid" >}})
-- [Privileges Escalation via Unprivileged User Namespaces]({{< ref "#privileges-userns" >}})
-- [Privileges Change via Capset system call]({{< ref "#privileges-capset" >}})
-- [Fileless Execution]({{< ref "#exec-fileless" >}})
-- [Execution of Deleted Binaries]({{< ref "#exec-unlinked" >}})
+- [Binary Execution in /tmp](#tmp-execs)
+- [sudo Monitoring](#sudo)
+- [Privileges Escalation via SUID Binary Execution](#privileges-suid)
+- [Privileges Escalation via File Capabilities Execution](#privileges-fscaps)
+- [Privileges Escalation via Setuid system calls](#privileges-setuid)
+- [Privileges Escalation via Unprivileged User Namespaces](#privileges-userns)
+- [Privileges Change via Capset system call](#privileges-capset)
+- [Fileless Execution](#exec-fileless)
+- [Execution of Deleted Binaries](#exec-unlinked)
 
 ### System Activity
 
-- [eBPF System Activity]({{< ref "#ebpf" >}})
-- [Kernel Module Audit trail]({{< ref "#kernel-module" >}})
-- [Shared Library Loading]({{< ref "#library" >}})
+- [eBPF System Activity](#ebpf)
+- [Kernel Module Audit trail](#kernel-module)
+- [Shared Library Loading](#library)
 
 ### Networking
 
-- [Network Activity of SSH daemon]({{< ref "#ssh-network" >}})
-- [Outbound Connections]({{< ref "#egress-connections" >}})
+- [Network Activity of SSH daemon](#ssh-network)
+- [Outbound Connections](#egress-connections)
 
 # Observability Policies
 
@@ -103,7 +105,7 @@ during an exploit for subsequent execution.
 ### Requirement
 
 Tetragon must run with the Process Credentials visibility enabled, please
-refer to [Enable Process Credentials]({{< ref "docs/installation/configuration#enable-process-credentials" >}}) documentation.
+refer to [Enable Process Credentials](/docs/docs/installation/configuration#enable-process-credentials) documentation.
 
 ### Policy
 
@@ -147,7 +149,7 @@ privileges after a successful exploit.
 ### Requirement
 
 Tetragon must run with the Process Credentials visibility enabled, please
-refer to [Enable Process Credentials]({{< ref "docs/installation/configuration#enable-process-credentials" >}})
+refer to [Enable Process Credentials](/docs/docs/installation/configuration#enable-process-credentials)
 documentation.
 
 ### Policy
@@ -303,7 +305,7 @@ live only in RAM or backed by volatile storage is a common best-practice.
 ### Requirement
 
 Tetragon must run with the Process Credentials visibility enabled, please
-refer to [Enable Process Credentials]({{< ref "docs/installation/configuration#enable-process-credentials" >}})
+refer to [Enable Process Credentials](/docs/docs/installation/configuration#enable-process-credentials)
 documentation.
 
 ### Policy
@@ -332,8 +334,8 @@ jq 'select(.process_exec != null) | select(.process_exec.process.binary_properti
 
 The output shows that the executed binary refers to a file descriptor
 `/proc/self/fd/3` that it is not linked on the file system.
-The [binary_properties]({{< ref "/docs/reference/grpc-api#binaryproperties" >}})
-includes an [inode]({{< ref "/docs/reference/grpc-api#inodeproperties" >}})
+The [binary_properties](/docs/docs/reference/grpc-api#binaryproperties)
+includes an [inode](/docs/docs/reference/grpc-api#inodeproperties)
 with zero links on the file system.
 
 ## Execution of Deleted Binaries {#exec-unlinked}
@@ -350,7 +352,7 @@ their traces then execute it. Detecting such executions is a good pratice.
 ### Requirement
 
 Tetragon must run with the Process Credentials visibility enabled, please
-refer to [Enable Process Credentials]({{< ref "docs/installation/configuration#enable-process-credentials" >}})
+refer to [Enable Process Credentials](/docs/docs/installation/configuration#enable-process-credentials)
 documentation.
 
 ### Policy
@@ -372,8 +374,8 @@ jq 'select(.process_exec != null) | select(.process_exec.process.binary_properti
 
 The output shows that the executed binary refers to a file descriptor
 `/proc/self/fd/14` that it is not linked on the file system.
-The [binary_properties]({{< ref "/docs/reference/grpc-api#binaryproperties" >}})
-includes an [inode]({{< ref "/docs/reference/grpc-api#inodeproperties" >}})
+The [binary_properties](/docs/docs/reference/grpc-api#binaryproperties)
+includes an [inode](/docs/docs/reference/grpc-api#inodeproperties)
 with zero links on the file system.
 
 ## eBPF Subsystem Interactions {#ebpf}
@@ -504,17 +506,17 @@ into any unexpected or malicious reverse shells.
 PODCIDR=`kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}'`
 ```
 
-{{< tabpane lang=shell >}}
+<Tabs>
 
-{{< tab GKE >}}
+<TabItem value="gke" label="GKE">
 SERVICECIDR=$(gcloud container clusters describe ${NAME} --zone ${ZONE} | awk '/servicesIpv4CidrBlock/ { print $2; }')
-{{< /tab >}}
+</TabItem>
 
-{{< tab Kind >}}
+<TabItem value="kind" label="Kind">
 SERVICECIDR=$(kubectl describe pod -n kube-system kube-apiserver-kind-control-plane | awk -F= '/--service-cluster-ip-range/ {print $2; }')
-{{< /tab >}}
+</TabItem>
 
-{{< /tabpane >}}
+</Tabs>
 
 ### Policy
 

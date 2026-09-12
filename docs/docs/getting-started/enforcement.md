@@ -3,6 +3,8 @@ title: "Policy Enforcement"
 weight: 6
 description: "Enforcing restrictions with Tetragon"
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 Tetragon's tracing policies support monitoring kernel functions to report
 events, such as file access events or network connection events, as well as enforcing restrictions on those same kernel functions. Using in-kernel
@@ -21,7 +23,7 @@ you've already deployed in this Getting Started guide. Specifically, you will:
 * Apply a policy that restricts network traffic egressing a Kubernetes cluster
 * Apply a block write and read operations to sensitive files
 
-For specific implementation details refer to the [Enforcement]({{< ref "/docs/concepts/enforcement" >}})
+For specific implementation details refer to the [Enforcement](/docs/docs/concepts/enforcement/persistent-enforcement)
 concept section.
 
 ## Restricting network traffic on Kubernetes
@@ -30,10 +32,10 @@ In this use case you will use a Tetragon tracing policy to block TCP connections
 outside the Kubernetes cluster where Tetragon is running. The Tetragon policy is
 namespaced, limiting the scope of the enforcement policy to just the "default"
 namespace where you installed the demo application in the
-[Quick Kubernetes Install]({{< ref "docs/getting-started/install-k8s" >}}) section.
+[Quick Kubernetes Install](/docs/docs/getting-started/install-k8s) section.
 
 The policy you will use is very similar to the policy you used in the
-[Network Monitoring]({{< ref "docs/getting-started/network" >}}) section, but
+[Network Monitoring](/docs/docs/getting-started/network) section, but
 with enforcement enabled. Although this policy does not use them, Tetragon
 tracing policies support including Kubernetes filters, such as namespaces and
 labels, so you can limit a policy to targeted namespaces and Pods. This is
@@ -49,24 +51,40 @@ You will also need to capture the service CIDR for use in customizing the policy
 When working with managed Kubernetes offerings (AKS, EKS, or GKE) you will need
 the environment variables used when you created the cluster.
 
-{{< tabpane lang=shell >}}
+<Tabs>
 
-{{< tab GKE >}}
+<TabItem value="gke" label="GKE">
+
+```bash
 export SERVICECIDR=$(gcloud container clusters describe ${NAME} --zone ${ZONE} | awk '/servicesIpv4CidrBlock/ { print $2; }')
-{{< /tab >}}
+```
 
-{{< tab Kind >}}
-export SERVICECIDR=$(kubectl describe pod -n kube-system kube-apiserver-kind-control-plane | awk -F= '/--service-cluster-ip-range/ {print $2; }')
-{{< /tab >}}
+</TabItem> 
 
-{{< tab EKS >}}
+<TabItem value="kind" label="Kind">
+
+```bash
+export SERVICECIDR=$(kubectl describe pod -n kube-system kube-apiserver-kind-control-plane | awk -F='/--service-cluster-ip-range/ {print $2; }')
+```
+
+</TabItem> 
+
+<TabItem value="eks" label="EKS">
+
+```bash
 export SERVICECIDR=$(aws eks describe-cluster --name ${NAME} | jq -r '.cluster.kubernetesNetworkConfig.serviceIpv4Cidr')
-{{< /tab >}}
+```
 
-{{< tab AKS >}}
-export SERVICECIDR=$(az aks show --name ${NAME} --resource-group ${AZURE_RESOURCE_GROUP} | jq -r '.networkProfile.serviceCidr)
-{{< /tab >}}
-{{< /tabpane >}}
+</TabItem> 
+
+<TabItem value="aks" label="AKS">
+
+```bash
+export SERVICECIDR=$(az aks show --name ${NAME} --resource-group ${AZURE_RESOURCE_GROUP} | jq -r '.networkProfile.serviceCidr')
+```
+
+</TabItem> 
+</Tabs>
 
 When you have captured the Pod CIDR and Service CIDR, then you can customize and
 apply the enforcement policy. (If you installed the demo application in a different
@@ -81,15 +99,25 @@ envsubst < network_egress_cluster_enforce.yaml | kubectl apply -n default -f -
 With the enforcement policy applied, run the `tetra getevents` command to observe
 events.
 
-{{< tabpane lang=shell >}}
-{{< tab "Kubernetes (single node)" >}}
+<Tabs>
+
+<TabItem value="kubernetes-single-node" label="Kubernetes (single node)">
+
+```bash
 kubectl exec -ti -n kube-system ds/tetragon -c tetragon -- tetra getevents -o compact --pods xwing
-{{< /tab >}}
-{{< tab "Kubernetes (multiple nodes)" >}}
+```
+
+</TabItem> 
+
+<TabItem value="kubernetes-multiple-nodes" label="Kubernetes (multiple nodes)">
+
+```bash
 POD=$(kubectl -n kube-system get pods -l 'app.kubernetes.io/name=tetragon' -o name --field-selector spec.nodeName=$(kubectl get pod xwing -o jsonpath='{.spec.nodeName}'))
 kubectl exec -ti -n kube-system $POD -c tetragon -- tetra getevents -o compact --pods xwing
-{{< /tab >}}
-{{< /tabpane >}}
+```
+
+</TabItem>
+</Tabs>
 
 To generate an event that Tetragon will report, use `curl` to connect to a
 site outside the Kubernetes cluster:
@@ -127,7 +155,7 @@ this:
 
 ### Enforce file access restrictions
 
-The following extends the example from [File Access Monitoring]({{< ref "docs/getting-started/file-events" >}})
+The following extends the example from [File Access Monitoring](/docs/docs/getting-started/file-events)
 with enforcement to ensure sensitive files are not read. The policy used is the
 [`file_monitoring_enforce.yaml`](https://github.com/cilium/tetragon/blob/main/examples/quickstart/file_monitoring_enforce.yaml),
 which you can review and extend as needed. The only difference between the
@@ -136,57 +164,79 @@ to `SIGKILL` the application and return an error on the operation.
 
 To apply the policy:
 
-{{< tabpane lang=shell >}}
+<Tabs>
 
-{{< tab "Kubernetes (single node)" >}}
+<TabItem value="kubernetes-single-node" label="Kubernetes (single node)">
+
+```bash
 kubectl delete -f https://raw.githubusercontent.com/cilium/tetragon/main/examples/quickstart/file_monitoring.yaml
 kubectl apply -f https://raw.githubusercontent.com/cilium/tetragon/main/examples/quickstart/file_monitoring_enforce.yaml
-{{< /tab >}}
-{{< tab "Kubernetes (multiple nodes)" >}}
+```
+
+</TabItem>
+
+<TabItem value="kubernetes-multiple-nodes" label="Kubernetes (multiple nodes)">
+
+```bash
 kubectl delete -f https://raw.githubusercontent.com/cilium/tetragon/main/examples/quickstart/file_monitoring.yaml
 kubectl apply -f https://raw.githubusercontent.com/cilium/tetragon/main/examples/quickstart/file_monitoring_enforce.yaml
-{{< /tab >}}
-{{< tab Docker >}}
+```
+
+</TabItem>
+
+<TabItem value="docker" label="Docker">
+
+```bash
 wget https://raw.githubusercontent.com/cilium/tetragon/main/examples/quickstart/file_monitoring_enforce.yaml
+
 docker stop tetragon
+
 docker run --name tetragon --rm --pull always \
-  --pid=host --cgroupns=host --privileged               \
+  --pid=host --cgroupns=host --privileged \
   -v ${PWD}/file_monitoring_enforce.yaml:/etc/tetragon/tetragon.tp.d/file_monitoring_enforce.yaml \
-  -v /sys/kernel/btf/vmlinux:/var/lib/tetragon/btf      \
-  quay.io/cilium/tetragon:{{< latest-version >}}
-{{< /tab >}}
-{{< /tabpane >}}
+  -v /sys/kernel/btf/vmlinux:/var/lib/tetragon/btf \
+  quay.io/cilium/tetragon:<TETRAGON_VERSION>
+  ```
+
+</TabItem>
+</Tabs>
 
 With the policy applied, you can run `tetra getevents` to have Tetragon start
 outputting events to the terminal.
 
-{{< tabpane lang=shell >}}
-{{< tab "Kubernetes (single node)" >}}
+<Tabs>
+<TabItem value="kubernetes-single-node" label="Kubernetes (single node)">
+```shell
 kubectl exec -ti -n kube-system ds/tetragon -c tetragon -- tetra getevents -o compact --pods xwing
-{{< /tab >}}
-{{< tab "Kubernetes (multiple nodes)" >}}
+```
+</TabItem>
+<TabItem value="kubernetes-multiple-nodes" label="Kubernetes (multiple nodes)">
+```shell
 POD=$(kubectl -n kube-system get pods -l 'app.kubernetes.io/name=tetragon' -o name --field-selector spec.nodeName=$(kubectl get pod xwing -o jsonpath='{.spec.nodeName}'))
 kubectl exec -ti -n kube-system $POD -c tetragon -- tetra getevents -o compact --pods xwing
-{{< /tab >}}
-{{< tab Docker >}}
+```
+</TabItem>
+<TabItem value="docker" label="Docker">
+```shell
 docker exec -ti tetragon tetra getevents -o compact
-{{< /tab >}}
-{{< /tabpane >}}
+```
+</TabItem>
+</Tabs>
 
 Next, attempt to read a sensitive file (one of the files included in the defined
 policy):
 
-{{< tabpane lang=shell >}}
-{{< tab "Kubernetes (single node)" >}}
+<Tabs>
+<TabItem value="kubernetes-single-node" label="Kubernetes (single node)">
 kubectl exec -ti xwing -- bash -c 'cat /etc/shadow'
-{{< /tab >}}
-{{< tab "Kubernetes (multiple nodes)" >}}
+</TabItem>
+<TabItem value="kubernetes-multiple-nodes" label="Kubernetes (multiple nodes)">
 kubectl exec -ti xwing -- bash -c 'cat /etc/shadow'
-{{< /tab >}}
-{{< tab Docker >}}
+</TabItem>
+<TabItem value="docker" label="Docker">
 cat /etc/shadow
-{{< /tab >}}
-{{< /tabpane >}}
+</TabItem>
+</Tabs>
 
 Because the file is included in the policy, the command will fail with an error
 code.
@@ -233,9 +283,9 @@ Kubernetes system.
 The rest of the docs provide further documentation about installation and
 using policies. Some useful links:
 
-* To explore details of writing and implementing policies the [Concepts]({{< ref "/docs/concepts" >}})
+* To explore details of writing and implementing policies the [Concepts](/docs/docs/concepts/events)
 is a good jumping off point.
 * For installation into production environments we recommend reviewing
-[Advanced Installations]({{< ref "docs/installation" >}}).
-* Finally the [Use Cases]({{< ref "docs/use-cases" >}}) section covers different
+[Advanced Installations](/docs/docs/installation/kubernetes).
+* Finally the [Use Cases](/docs/docs/use-cases/network-observability) section covers different
 uses and deployment concerns related to Tetragon.

@@ -3,6 +3,8 @@ title: "Network Monitoring"
 weight: 5
 description: "Network access traces with Tetragon"
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 In addition to file access monitoring, Tetragon's tracing policies also support
 monitoring network access. In this section, you will see how to monitor network
@@ -24,24 +26,32 @@ You can fetch the service CIDR from the cluster in some environments. When
 working with managed Kubernetes offerings (AKS, EKS, or GKE) you will need the
 environment variables used when you created the cluster.
 
-{{< tabpane lang=shell >}}
+<Tabs>
 
-{{< tab GKE >}}
+<TabItem value="gke" label="GKE">
+```shell
 export SERVICECIDR=$(gcloud container clusters describe ${NAME} --zone ${ZONE} | awk '/servicesIpv4CidrBlock/ { print $2; }')
-{{< /tab >}}
+```
+</TabItem>
 
-{{< tab Kind >}}
+<TabItem value="kind" label="Kind">
+```shell
 export SERVICECIDR=$(kubectl describe pod -n kube-system -l component=kube-apiserver | awk -F= '/--service-cluster-ip-range/ {print $2; }')
-{{< /tab >}}
+```
+</TabItem>
 
-{{< tab EKS >}}
+<TabItem value="eks" label="EKS">
+```shell
 export SERVICECIDR=$(aws eks describe-cluster --name ${NAME} | jq -r '.cluster.kubernetesNetworkConfig.serviceIpv4Cidr')
-{{< /tab >}}
+```
+</TabItem>
 
-{{< tab AKS >}}
+<TabItem value="aks" label="AKS">
+```shell
 export SERVICECIDR=$(az aks show --name ${NAME} --resource-group ${AZURE_RESOURCE_GROUP} | jq -r '.networkProfile.serviceCidr)
-{{< /tab >}}
-{{< /tabpane >}}
+```
+</TabItem>
+</Tabs>
 
 Once you have this information, you can customize a policy to exclude network
 traffic to the networks stored in the `PODCIDR` and `SERVICECIDR` environment
@@ -56,17 +66,21 @@ envsubst < network_egress_cluster.yaml | kubectl apply -f -
 Once the tracing policy is applied, you can attach `tetra` to observe events
 again:
 
-{{< tabpane lang=shell >}}
+<Tabs>
 
-{{< tab "Kubernetes (single node)" >}}
+<TabItem value="kubernetes-single-node" label="Kubernetes (single node)">
+```shell
 kubectl exec -ti -n kube-system ds/tetragon -c tetragon -- tetra getevents -o compact --pods xwing --processes curl
-{{< /tab >}}
+```
+</TabItem>
 
-{{< tab "Kubernetes (multiple nodes" >}}
+<TabItem value="kubernetes-multiple-nodes" label="Kubernetes (multiple nodes)">
+```shell
 POD=$(kubectl -n kube-system get pods -l 'app.kubernetes.io/name=tetragon' -o name --field-selector spec.nodeName=$(kubectl get pod xwing -o jsonpath='{.spec.nodeName}'))
 kubectl exec -ti -n kube-system $POD -c tetragon -- tetra getevents -o compact --pods xwing --processes curl
-{{< /tab >}}
-{{< /tabpane >}}
+```
+</TabItem>
+</Tabs>
 
 Then execute a `curl` command in the "xwing" Pod to access one of our favorite
 sites.
@@ -140,7 +154,7 @@ docker run -d --name tetragon --rm --pull always \
   --pid=host --cgroupns=host --privileged               \
   -v ${PWD}/network_egress_cluster_subst.yaml:/etc/tetragon/tetragon.tp.d/network_egress_cluster_subst.yaml \
   -v /sys/kernel/btf/vmlinux:/var/lib/tetragon/btf      \
-  quay.io/cilium/tetragon:{{< latest-version >}}
+  quay.io/cilium/tetragon:<TETRAGON_VERSION>
 ```
 
 Once Tetragon is running, use `docker exec` to run the `tetra getevents` command
@@ -172,9 +186,9 @@ So far you have installed Tetragon and used a couple policies to monitor
 sensitive files and provide network auditing for connections outside your own
 cluster and node. Both these cases highlight the value of in-kernel filtering.
 Another benefit of in-kernel filtering is you can add
-[enforcement]({{< ref "/docs/getting-started/enforcement" >}}) to the policies
+[enforcement](/docs/docs/getting-started/enforcement) to the policies
 to not only alert via a log entry, but to block the operation in kernel and/or
 kill the application attempting the operation.
 
 To learn more about policies and events Tetragon can implement review the
-[Concepts]({{< ref "/docs/concepts" >}}) section.
+[Concepts](/docs/docs/concepts/events) section.

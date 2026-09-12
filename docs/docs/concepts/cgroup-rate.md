@@ -21,17 +21,17 @@ The throttle action generates following events:
 - `THROTTLE` start event is sent when the group rate limit is crossed
 - `THROTTLE` stop event is sent when the cgroup rate is again below the limit stable for 5 seconds
 
-{{< note >}}
+:::note
 The threshold for given cgroup is monitored *per CPU*.
 When the events are spread around on multiple CPUs we will throttle
 them per CPU only if they cross the threshold on that CPU.
-{{< /note >}}
+:::
 
-{{< note >}}
+:::note
 At the moment we monitor and limit base sensor events:
   - `PROCESS_EXEC`
   - `PROCESS_EXIT`
-{{< /note >}}
+:::
 
 ## Setup
 

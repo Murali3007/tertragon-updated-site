@@ -13,18 +13,18 @@ Tetragon serves its gRPC API on two listeners:
 
 This page shows how to enable TLS, switch to mTLS, and connect with `tetra`.
 
-{{< caution >}}
+:::caution
 TLS settings are silently ignored when `--server-address` points at a
 `unix://` socket. Configure a TCP address (for example `0.0.0.0:54321`)
 before enabling TLS.
-{{< /caution >}}
+:::
 
-{{< warning >}}
+:::warning
 Exposing Tetragon via TCP without TLS client verification allows
 unprivileged users with network access to modify Tetragon's configuration.
 Make sure that only trusted users can reach the TCP socket for example by
 enabling client verification or network-level access control.
-{{< /warning >}}
+:::
 
 ## Quick start (Helm, auto-provisioned)
 
@@ -68,7 +68,7 @@ Pick one method via `tetragon.grpc.tls.auto.method`:
 | `certmanager` | Hand off issuance to [cert-manager](https://cert-manager.io/). Set `auto.certManagerIssuerRef` to your `Issuer`/`ClusterIssuer`. |
 
 Tunables (`tetragon.grpc.tls.*`) are listed in the
-[Helm chart reference]({{< ref "/docs/reference/helm-chart" >}}).
+[Helm chart reference](/docs/docs/reference/helm-chart).
 
 ## Bring your own certificates
 
@@ -109,15 +109,15 @@ If the server certificate chains to the host OS trust store, you can also omit
 `--tls-ca-cert-files`; for example, `--tls-server-name` alone is enough to
 switch `tetra` to a TLS connection that uses the system CA bundle.
 
-{{< caution >}}
+:::caution
 `--tls-skip-verify` disables server certificate verification and is intended
 for local development only. It is mutually exclusive with `--tls-ca-cert-files`.
-{{< /caution >}}
+:::
 
 ## Standalone deployments
 
 For container or systemd installs, set the daemon flags directly through
-[drop-in configuration files]({{< ref "/docs/reference/daemon-configuration#configuration-precedence" >}}):
+[drop-in configuration files](/docs/docs/reference/daemon-configuration#configuration-precedence):
 
 ```shell
 echo "0.0.0.0:54321"                       > /etc/tetragon/tetragon.conf.d/server-address
@@ -129,7 +129,7 @@ echo "/etc/tetragon/tls/ca.crt"            > /etc/tetragon/tetragon.conf.d/serve
 ```
 
 The full flag list is in the
-[Daemon configuration reference]({{< ref "/docs/reference/daemon-configuration" >}}).
+[Daemon configuration reference](/docs/docs/reference/daemon-configuration).
 
 ## Certificate rotation
 
@@ -140,6 +140,6 @@ new material.
 
 ## See also
 
-* [Helm chart reference]({{< ref "/docs/reference/helm-chart" >}})
-* [Daemon configuration reference]({{< ref "/docs/reference/daemon-configuration" >}})
-* [Troubleshooting gRPC TLS]({{< ref "/docs/troubleshooting/grpc-tls" >}})
+* [Helm chart reference](/docs/docs/reference/helm-chart)
+* [Daemon configuration reference](/docs/docs/reference/daemon-configuration)
+* [Troubleshooting gRPC TLS](/docs/docs/troubleshooting/grpc-tls)

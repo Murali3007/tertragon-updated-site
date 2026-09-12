@@ -4,15 +4,15 @@ weight: 5
 description: "Learn how to submit a pull request to the project"
 ---
 
-{{< note >}}
+:::note
 This guide is partially based on the
 [Cilium contributing guide](https://docs.cilium.io/en/latest/contributing/development/contributing_guide/#submitting-a-pull-request).
-{{< /note >}}
+:::
 
-{{< caution >}}
+:::caution
 This guide assumes that you have already made and tested changes you want to contribute. If you have not,
-please follow the steps from the [Contribution Guide]({{< ref "/docs/contribution-guide#guide-for-code-and-docs-contribution" >}}).
-{{< /caution >}}
+please follow the steps from the [Contribution Guide](/docs/docs/contribution-guide/development-setup).
+:::
 
 ## Commit changes
 
@@ -20,14 +20,14 @@ Save your changes in one or more commits.  If you are not comfortable
 with Git yet (in particular with `git rebase`), refer to the
 [GitHub documentation](https://docs.github.com/en/get-started/using-git/using-git-rebase-on-the-command-line).
 
-{{< caution >}}
+:::caution
 Commits should separate logical chunks of code and not represent a
 chronological list of changes. Each commit should compiles and is
 functional on its own to allow for bisecting.
 
 If in code review you are requested to make changes, squash the
 follow-up changes into the existing commits.
-{{< /caution >}}
+:::
 
 
 ### Write a commit message
@@ -56,7 +56,7 @@ All commits must contain a well-written commit message:
    ```
 
 4. All commits **must be signed off** `(git commit -s)`.
-   See the section [Developer's Certificate of Origin]({{< ref "/docs/contribution-guide/developer-certificate-of-origin" >}}).
+   See the section [Developer's Certificate of Origin](/docs/docs/contribution-guide/developer-certificate-of-origin).
 
 ### Example commit messages
 
@@ -177,10 +177,10 @@ feedback, add relevant labels and run the CI workflows if needed.
    ```
    ````
 
-   {{< note >}}
+   :::note
    If multiple lines are provided, the PR title will be used and the lines will
    be added as sub items.
-   {{< /note >}}
+   :::
 3. If you have permissions to do so, **pick the right release-note label**.
    These labels will be used to generate the release notes which will primarily
    be read by users.

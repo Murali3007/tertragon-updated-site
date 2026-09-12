@@ -3,10 +3,12 @@ title: "Kubernetes Identity Aware Policies"
 weight: 4
 description: "Tetragon in-kernel filtering based on Kubernetes namespaces, pod labels, and container fields"
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 ## Motivation
 
-Tetragon is configured via [TracingPolicies]({{< ref "/docs/concepts/tracing-policy" >}}). Broadly
+Tetragon is configured via [TracingPolicies](/docs/docs/concepts/tracing-policy/example). Broadly
 speaking, TracingPolicies define _what_ situations Tetragon should react to and _how_. The _what_
 can be, for example, specific system calls with specific argument values. The _how_ defines what
 action the Tetragon agent should perform when the specified situation occurs. The most common action
@@ -55,10 +57,10 @@ To filter host workloads we use the `hostSelector` field of tracing policies to 
 should be applied to host workloads or not. For now this only supports `{}` to match all host workloads
 and `null` to match none of the host workloads.
 
-{{< note >}}
+:::note
 Since a `TracingPolicyNamespaced` can only apply to Pods within a specific
 Kubernetes namespace, any non-null `hostSelector` will trigger an error.
-{{< /note >}}
+:::
 
 Based on these, the user can choose on which workloads does a policy apply.
 
@@ -104,27 +106,27 @@ not silently dropped: it is reported with the `skipped` state (rather than being
 absent) in `tetra tracingpolicy list`, so a gated-out policy is distinguishable
 from a missing one.
 
-{{< note >}}
+:::note
 `nodeSelector` is evaluated by the Tetragon agent against the Kubernetes node it
 runs on, so it only applies to policies managed through the Kubernetes API
 (`TracingPolicy` and `TracingPolicyNamespaced`). Policies loaded directly from a
 file or through the gRPC API are not subject to `nodeSelector`.
-{{< /note >}}
+:::
 
-{{< note >}}
+:::note
 If the agent cannot evaluate the selector (for example, the node object is
 temporarily unavailable), it loads the policy on that node — `nodeSelector`
 fails open so a transient error never silently drops a policy.
-{{< /note >}}
+:::
 
-{{< warning >}}
+:::warning
 Because `nodeSelector` keys are read from the node's labels, any user that
 can edit node labels can change which policies an agent loads — including
 unloading an enforcement policy by relabeling the node. When gating enforcement
 policies (for example `Sigkill`), restrict who can modify the node labels used
 in the selector, and prefer labels that are set at node provisioning time and
 not writable by untrusted workloads.
-{{< /warning >}}
+:::
 
 ## Filtering semantics
 
@@ -141,11 +143,11 @@ The following table summarizes how different combinations of `hostSelector`, `po
 | `{}`             | `{...}`          | `null` (default)    | Select all host workloads, plus all containers in pods that match `podSelector`.                                       |
 | `{}`             | `{...}`          | `{...}`             | Select all host workloads, plus all containers that match `containerSelector` in pods that match `podSelector`.        |
 
-{{< note >}}
+:::note
 When `hostSelector`, `podSelector`, and `containerSelector` are all left at their default
 value of `null` (that is, they are omitted), this is treated as a special case: workload
 filtering is disabled entirely, and all host and pod/container workloads are selected.
-{{< /note >}}
+:::
 
 
 ## Examples
@@ -202,8 +204,8 @@ For this demo, we use containerd and configure appropriate run-time hooks.
 
 First, let us start a cluster, build and load images, and install Tetragon and OCI hooks:
 
-{{< tabpane lang=shell >}}
-{{< tab "minikube" >}}
+<Tabs>
+<TabItem value="minikube" label="minikube">
 
 minikube start --container-runtime=containerd
 ./contrib/tetragon-rthooks/scripts/minikube-install-hook.sh
@@ -216,8 +218,8 @@ helm install --namespace kube-system \
 	--set tetragon.grpc.address="unix:///var/run/tetragon/tetragon.sock" \
 	tetragon ./install/kubernetes/tetragon
 
-{{< /tab >}}
-{{< tab "kind" >}}
+</TabItem>
+<TabItem value="kind" label="kind">
 
 kind create cluster
 ./contrib/tetragon-rthooks/scripts/kind-hook-setup.sh
@@ -229,8 +231,8 @@ helm install --namespace kube-system \
 	--set tetragon.grpc.address="unix:///var/run/tetragon/tetragon.sock" \
 	tetragon ./install/kubernetes/tetragon
 
-{{< /tab >}}
-{{< /tabpane >}}
+</TabItem>
+</Tabs>
 
 Once the tetragon pod is up and running, we can get its name and store it in a variable for convenience.
 ```shell

@@ -18,12 +18,12 @@ Override the return value of a call means that the function will never be execut
 value (typically an error) will be returned to the caller. Generally speaking, only system calls and
 security check functions allow to change their return value in this manner. Details about how users
 can configure tracing policies to override the return value can be found in the [Override
-action]({{< ref "/docs/concepts/tracing-policy/selectors#override-action" >}}) documentation.
+action](/docs/docs/concepts/tracing-policy/example/selectors#override-action) documentation.
 
 ## Signals
 
 Another type of enforcement is signals. For example, users can write a TracingPolicy (details can be
-found in the [Signal action]({{<ref "/docs/concepts/tracing-policy/selectors#signal-action" >}})
+found in the [Signal action](/docs/docs/concepts/tracing-policy/example/selectors#signal-action)
 documentation) that sends a `SIGKILL` to a process matching certain criteria and thus terminate it.
 
 In contrast with overriding the return value, sending a `SIGKILL` signal does not always stop the

@@ -5,8 +5,7 @@ description: "Monitor filename access using kprobe hooks"
 ---
 
 This page shows how you can create a tracing policy to monitor filename access. For general
-information about tracing policies, see the [tracing policy page]({{< ref
-"/docs/concepts/tracing-policy/hooks" >}}).
+information about tracing policies, see the [tracing policy page](/docs/docs/concepts/tracing-policy/hooks).
 
 There are two aspects of the tracing policy: (i) what hooks you can use to monitor specific types of
 access, and (ii) how you can filter at the kernel level for only specific events. 

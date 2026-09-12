@@ -5,17 +5,17 @@ description: "Discover and experiment with Tetragon on your local Linux host"
 aliases: ["/docs/tutorials/try-tetragon-linux"]
 ---
 
-{{< note >}}
+:::note
 This guide has been tested on Ubuntu 22.04 and 22.10 with respectively kernel
 `5.15.0` and `5.19.0` on amd64 and arm64 but
 [any recent distribution](https://github.com/libbpf/libbpf#bpf-co-re-compile-once--run-everywhere)
 shipping with a relatively recent kernel should work. See the FAQ for further details on
-the [recommended kernel versions]({{< ref "/docs/installation/faq#what-is-the-minimum-linux-kernel-version-to-run-tetragon" >}}).
+the [recommended kernel versions](/docs/docs/installation/faq#what-is-the-minimum-linux-kernel-version-to-run-tetragon).
 
 Note that you cannot run Tetragon using Docker Desktop on macOS because of a
 limitation of the Docker Desktop Linux virtual machine. Learn more about this issue
-and how to run Tetragon on a Mac computer in [this section of the FAQ page](/docs/installation/faq#can-i-run-tetragon-on-mac-computers).
-{{< /note >}}
+and how to run Tetragon on a Mac computer in [this section of the FAQ page](/docs/docs/installation/faq#can-i-run-tetragon-on-mac-computers).
+:::
 
 ## Start Tetragon
 
@@ -26,12 +26,12 @@ using the released container images.
 docker run -d --name tetragon --rm --pull always \
     --pid=host --cgroupns=host --privileged             \
     -v /sys/kernel/btf/vmlinux:/var/lib/tetragon/btf    \
-    quay.io/cilium/tetragon:{{< latest-version >}}
+    quay.io/cilium/tetragon:<TETRAGON_VERSION>
 ```
 
 This will start Tetragon in a privileged container running in the background.
 Running Tetragon as a privileged container is required to load and attach BPF
-programs. See the [Installation and Configuration]({{< ref "/docs/installation" >}})
+programs. See the [Installation and Configuration](/docs/docs/installation/kubernetes)
 section for more details.
 
 ## Run demo application
@@ -58,4 +58,4 @@ cace79752d94   quay.io/cilium/json-mock:v1.3.8   "bash /run.sh"           34 sec
 
 ## What's next
 
-Check for [execution events]({{< ref "/docs/getting-started/execution" >}}).
+Check for [execution events](/docs/docs/getting-started/execution).

@@ -20,7 +20,7 @@ can be used to answer the following questions:
 
 ### Kubernetes Environments
 
-After deploying Tetragon, use the [monitor-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-kernel-modules.yaml) tracing policy which generates [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events
+After deploying Tetragon, use the [monitor-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-kernel-modules.yaml) tracing policy which generates [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events
 to trace kernel module operations.
 
 Apply the [monitor-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-kernel-modules.yaml) tracing policy:
@@ -34,10 +34,10 @@ kubectl exec -it -n kube-system ds/tetragon -c tetragon -- tetra getevents
 ```
 
 When loading an out of tree module named `kernel_module_hello.ko` with the command `insmod`,
-`tetra` CLI will generate the following [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events:
+`tetra` CLI will generate the following [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events:
 
-<details><summary> 1. Reading the kernel module from the file system </summary>
-<p>
+<details>
+<summary> 1. Reading the kernel module from the file system </summary>
 
 ```json
 {
@@ -90,16 +90,15 @@ When loading an out of tree module named `kernel_module_hello.ko` with the comma
 }
 ```
 
-In addition to the process metadata from exec events, [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events contain the arguments of the observed call. In the above case they are:
+In addition to the process metadata from exec events, [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events contain the arguments of the observed call. In the above case they are:
 
 - `security_kernel_read_file`: the kernel security hook when the kernel loads file specified by user space.
 - `file_arg`: the full path of the kernel module on the file system.
 
-</p>
 </details>
 
-<details><summary> 2. Finalize loading of kernel modules </summary>
-<p>
+<details>
+<summary> 2. Finalize loading of kernel modules </summary>
 
 ```json
 {
@@ -150,14 +149,13 @@ In addition to the process metadata from exec events, [ProcessKprobe]({{< ref "/
 }
 ```
 
-This [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) event contains:
+This [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) event contains:
 
 - `do_init_module`: the function call where the module is finaly loaded.
-- [`module_arg`]({{< ref "/docs/reference/grpc-api#kernelmodule" >}}): the kernel module information, it contains:
+- [`module_arg`](/docs/docs/reference/grpc-api#kernelmodule): the kernel module information, it contains:
   - `name`: the name of the kernel module as a string.
-  - [`tainted`]({{< ref "/docs/reference/grpc-api#taintedbitstype" >}}): the module tainted flags that will be applied on the kernel. In the example above, it indicates we are loading an out-of-tree module, that is unsigned module which may compromise the integrity of our system.
+  - [`tainted`](/docs/docs/reference/grpc-api#taintedbitstype): the module tainted flags that will be applied on the kernel. In the example above, it indicates we are loading an out-of-tree module, that is unsigned module which may compromise the integrity of our system.
 
-</p>
 </details>
 
 ## Monitor Kernel Modules Signature
@@ -169,14 +167,14 @@ This allows to assert that:
 
 * The integrity of the system or the kernel was not compromised.
 
-{{< note >}}
+:::note
 Module signing increases security by identifying malicious modules loaded into the kernel. It is also possible to
 deny loading such modules if the signature verification fails.
-{{< /note >}}
+:::
 
 ### Kubernetes Environments
 
-After deploying Tetragon, use the [monitor-signed-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-signed-kernel-modules.yaml) tracing policy which generates [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) events
+After deploying Tetragon, use the [monitor-signed-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-signed-kernel-modules.yaml) tracing policy which generates [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) events
 to identify if kernel modules are signed or not.
 
 Apply the [monitor-signed-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-signed-kernel-modules.yaml) tracing policy:
@@ -188,9 +186,9 @@ Before going forward, deploy the [`test-pod`](https://raw.githubusercontent.com/
 This allows to run the demo by mountig an `xfs` file system inside the `test-pod` which requires privileges,
 but will also trigger an automatic `xfs` module loading operation.
 
-{{< note >}}
+:::note
 This was tested on an Ubuntu host.
-{{< /note >}}
+:::
 
 
 ```shell
@@ -223,8 +221,8 @@ umount /mnt/xfs.volume/
 
 `tetra` CLI will generate the following events:
 
-<details><summary> 1. Automatic loading of kernel modules </summary>
-<p>
+<details>
+<summary> 1. Automatic loading of kernel modules </summary>
 
 First the `mount` command will trigger an automatic operation to load the `xfs` kernel module.
 
@@ -305,18 +303,17 @@ First the `mount` command will trigger an automatic operation to load the `xfs` 
 }
 ```
 
-In addition to the process metadata from exec events, [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) event contains the arguments of the observed call. In the above case they are:
+In addition to the process metadata from exec events, [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) event contains the arguments of the observed call. In the above case they are:
 
 - `security_kernel_module_request`: the kernel security hook where modules are loaded on-demand.
 - `string_arg`: the name of the kernel module. When modules are automatically loaded, for security reasons, 
   the kernel prefixes the module with the name of the subsystem that requested it. In our case, it's requested
   by the file system subsystem, hence the name is `fs-xfs`.
 
-</p>
 </details>
 
-<details><summary> 2. Kernel calls modprobe to load the kernel module </summary>
-<p>
+<details>
+<summary> 2. Kernel calls modprobe to load the kernel module </summary>
 
 The kernel will then call user space `modprobe` to load the kernel module.
 
@@ -353,20 +350,19 @@ The kernel will then call user space `modprobe` to load the kernel module.
 }
 ```
 
-The [ProcessExec]({{< ref "/docs/reference/grpc-api#processexec" >}}) event where `modprobe` tries to load the `xfs` module.
+The [ProcessExec](/docs/docs/reference/grpc-api#processexec) event where `modprobe` tries to load the `xfs` module.
 
-{{< note >}}
+:::note
 Here `modprobe` is started in the initial Linux host namespaces, outside of the container namespaces. When kernel
 modules are loaded on-demand, the kernel will spawn a user space process `modprobe` that finds and load the appropriate
 module from the host file system. This is done on behalf of the container and since its originate from the kernel then
 the inherited Linux namespaces including the file system are eventually from the host.
-{{< /note >}}
+:::
 
-</p>
 </details>
 
-<details><summary> 3. Reading the kernel module from the file system </summary>
-<p>
+<details>
+<summary> 3. Reading the kernel module from the file system </summary>
 
 `modprobe` will read the passed `xfs` kernel module from the host file system.
 
@@ -419,15 +415,15 @@ the inherited Linux namespaces including the file system are eventually from the
 }
 ```
 
-This [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) event contains:
+This [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) event contains:
 
 - `security_kernel_read_file`: the kernel security hook when the kernel loads file specified by user space.
 - `file_arg`: the full path of the kernel module on the host file system.
 
-</p>
 </details>
 
-<details><summary> 4. Kernel module signature and sections are parsed </summary>
+<details>
+<summary> 4. Kernel module signature and sections are parsed </summary>
 <p>
 
 The final event is when the kernel is parsing the module sections. If all succeed the module will be loaded.
@@ -476,10 +472,10 @@ The final event is when the kernel is parsing the module sections. If all succee
 }
 ```
 
-This [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) event contains the module argument.
+This [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) event contains the module argument.
 
 - `find_module_sections`: the function call where the kernel parses the module sections.
-- [`module_arg`]({{< ref "/docs/reference/grpc-api#kernelmodule" >}}): the kernel module information, it contains:
+- [`module_arg`](/docs/docs/reference/grpc-api#kernelmodule): the kernel module information, it contains:
   - `name`: the name of the kernel module as a string.
   - `signature_ok`: a boolean value, if set to `true` then module signature was successfully verified by the kernel. If it is `false`
      or missing then the signature verification was not performed or probably failed. In all cases this means the integrity of the system has been compromised. Depends on kernels compiled with [`CONFIG_MODULE_SIG`](https://docs.kernel.org/admin-guide/module-signing.html) option.
@@ -492,9 +488,10 @@ This [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) event
 
 Using the same [monitor-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-kernel-modules.yaml) tracing policy allows to monitor unloading of kernel modules.
 
-The following [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}}) event will be generated:
+The following [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe) event will be generated:
 
-<details><summary> Removing kernel modules event </summary>
+<details>
+<summary> Removing kernel modules event </summary>
 <p>
 
 ```json
@@ -549,11 +546,11 @@ The following [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >
 </p>
 </details>
 
-{{< note >}}
+:::note
 Please note that some kernel module rootkits hide themselves by deleting their
 entries from the kernel internal module lists while continuing to run in the background.
 Monitoring module load operations allows to detect such cases
-{{< /note >}}
+:::
 
 To disable the [monitor-kernel-modules](https://raw.githubusercontent.com/cilium/tetragon/main/examples/tracingpolicy/host-changes/monitor-kernel-modules.yaml) run:
 

@@ -5,7 +5,7 @@ weight: 4
 description: "Common errors when connecting to the Tetragon gRPC API over TLS"
 ---
 
-The setup steps live in [gRPC TLS / mTLS]({{< ref "/docs/installation/grpc-tls" >}}).
+The setup steps live in [gRPC TLS / mTLS](/docs/docs/installation/grpc-tls).
 This page covers the three errors operators hit most often.
 
 ## `x509: certificate signed by unknown authority`

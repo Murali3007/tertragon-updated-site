@@ -33,7 +33,7 @@ Security teams often face significant challenges in ensuring the integrity of cr
 These methods are prone to delays, creating a window of opportunity for malicious actors to alter or access sensitive files without detection. Additionally, monitoring systems like Inotify can struggle with scalability, expressiveness, and the ability to filter events based on specific execution contexts, such as the identity of the process accessing the file.
 
 <div class="text-center">
-    <img src="/images/use-cases/file-integrity-monitoring-illustration.jpg" alt="File Integrity Monitoring with eBPF and Tetragon" class="img-fluid mt-3 mb-4">
+    <img src="/images/use-cases/file-integrity-monitoring-illustration.jpg" alt="File Integrity Monitoring with eBPF and Tetragon" class="img-fluid mt-3 mb-4" />
 </div>
 
 Tetragon leverages the power of eBPF to eliminate these gaps, providing a more efficient, flexible, and scalable solution for file integrity monitoring. With Tetragon, file monitoring is conducted directly in the kernel, ensuring minimal overhead and real-time visibility into file access and modification. By associating events with execution context—such as process identity and Kubernetes workload—Tetragon offers precise insights into who is accessing sensitive files and why.

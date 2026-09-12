@@ -8,11 +8,11 @@ description: "Learn the basics of Tracing Policy via an example"
 To discover `TracingPolicy`, let's understand via an example that will be
 explained, part by part, in this document:
 
-{{< warning >}}
+:::warning
 This policy is for illustration purposes only and should not be used to
 restrict access to certain files. It can be easily bypassed by, for example,
 using hard links.
-{{< /warning >}}
+:::
 
 ```yaml
 apiVersion: cilium.io/v1alpha1
@@ -78,7 +78,7 @@ indicate that it's not a syscall, but a regular kernel function. We then
 specify the function arguments, so that Tetragon's BPF code will extract
 and optionally perform filtering on them.
 
-See the [hook points page]({{< ref "/docs/concepts/tracing-policy/hooks" >}})
+See the [hook points page](/docs/docs/concepts/tracing-policy/hooks)
 for further information on the various hook points available and arguments.
 
 ## Selectors
@@ -106,7 +106,7 @@ Then we add the `Sigkill` action, meaning, that any match of the selector
 should send a SIGKILL signal to the process that initiated the event.
 
 Learn more about the various selectors in the dedicated
-[selectors page]({{< ref "/docs/concepts/tracing-policy/selectors" >}}).
+[selectors page](/docs/docs/concepts/tracing-policy/selectors).
 
 ## Message
 
@@ -123,7 +123,7 @@ spec:
 ## Tags
 
 Tags are optional fields of a Tracing Policy that are used to categorize generated
-events. Further reference here: [Tags documentation]({{< ref "/docs/concepts/tracing-policy/tags" >}}).
+events. Further reference here: [Tags documentation](/docs/docs/concepts/tracing-policy/tags).
 
 ## Policy effect
 
@@ -138,15 +138,15 @@ You can save the policy in an `example.yaml` file, compile Tetragon locally, and
 sudo ./tetragon --bpf-lib bpf/objs --tracing-policy example.yaml
 ```
 
-(See [Quick Kubernetes Install]({{< ref "/docs/getting-started/install-k8s" >}}) and [Quick Local
-Docker Install]({{< ref "/docs/getting-started/install-docker" >}}) for other ways to start
+(See [Quick Kubernetes Install](/docs/docs/getting-started/install-k8s) and [Quick Local
+Docker Install](/docs/docs/getting-started/install-docker) for other ways to start
 Tetragon.)
 
 
-{{< note >}}
+:::note
 Stop tetragon with <kbd>Ctrl</kbd>+<kbd>C</kbd> to disable the policy and
 remove the BPF programs.
-{{< /note >}}
+:::
 
 Once the Tetragon starts, you can monitor events using `tetra`, the tetragon CLI:
 ```shell
@@ -175,6 +175,6 @@ Killed
 For more examples of tracing policies, take a look at the
 [examples/tracingpolicy](https://github.com/cilium/tetragon/tree/main/examples/tracingpolicy)
 folder in the Tetragon repository. Also read the following sections on
-[hook points]({{< ref "/docs/concepts/tracing-policy/hooks" >}}) and
-[selectors]({{< ref "/docs/concepts/tracing-policy/selectors" >}}).
+[hook points](/docs/docs/concepts/tracing-policy/hooks) and
+[selectors](/docs/docs/concepts/tracing-policy/selectors).
 

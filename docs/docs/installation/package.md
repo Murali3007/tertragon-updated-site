@@ -10,22 +10,22 @@ description: "Install and manage Tetragon via released packages."
 Tetragon will be managed as a systemd service. Tarballs are built and
 distributed along the assets in [the releases](https://github.com/cilium/tetragon/releases).
 
-{{< note >}}
+:::note
 Tetragon as of version 1.0 supports amd64 and arm64 architectures.
-{{< /note >}}
+:::
 
 1. First download the latest binary tarball, using `curl` for example to download the `amd64` release:
 
    ```shell
-   curl -LO https://github.com/cilium/tetragon/releases/download/{{< latest-version >}}/tetragon-{{< latest-version >}}-amd64.tar.gz
+   curl -LO https://github.com/cilium/tetragon/releases/download/<TETRAGON_VERSION>/tetragon-<TETRAGON_VERSION>-amd64.tar.gz
    ```
 
 2. Extract the downloaded archive, and start the install script to install
    Tetragon. Feel free to inspect the script before starting it.
 
    ```shell
-   tar -xvf tetragon-{{< latest-version >}}-amd64.tar.gz
-   cd tetragon-{{< latest-version >}}-amd64/
+   tar -xvf tetragon-<TETRAGON_VERSION>-amd64.tar.gz
+   cd tetragon-<TETRAGON_VERSION>-amd64/
    sudo ./install.sh
    ```
 
@@ -56,11 +56,11 @@ Tetragon as of version 1.0 supports amd64 and arm64 architectures.
             └─138819 /usr/local/bin/tetragon
    ```
 
-{{< note >}}
+:::note
 If Tetragon does not to start due to BTF issues, please refer to the
-[corresponding question in the FAQ]({{< ref "/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file" >}})
+[corresponding question in the FAQ](/docs/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file)
 for details and solutions.
-{{< /note >}}
+:::
 
 ## Configuration
 
@@ -71,7 +71,7 @@ can change the configuration by adding drop-ins inside
 command line flags. To restore default settings, remove any added configuration
 inside `/etc/tetragon/tetragon.conf.d/`.
 
-See [Tetragon daemon configuration]({{< ref "/docs/reference/daemon-configuration" >}}) for further details.
+See [Tetragon daemon configuration](/docs/docs/reference/daemon-configuration) for further details.
 
 ## Upgrade
 
@@ -80,7 +80,7 @@ To upgrade Tetragon:
 1. Download the new tarball.
 
    ```shell
-   curl -LO https://github.com/cilium/tetragon/releases/download/{{< latest-version >}}/tetragon-{{< latest-version >}}-amd64.tar.gz
+   curl -LO https://github.com/cilium/tetragon/releases/download/<TETRAGON_VERSION>/tetragon-<TETRAGON_VERSION>-amd64.tar.gz
    ```
 
 2. Stop the Tetragon service.
@@ -100,8 +100,8 @@ To upgrade Tetragon:
 4. Install the upgraded Tetragon version.
 
    ```shell
-   tar -xvf tetragon-{{< latest-version >}}-amd64.tar.gz
-   cd tetragon-{{< latest-version >}}-amd64/
+   tar -xvf tetragon-<TETRAGON_VERSION>-amd64.tar.gz
+   cd tetragon-<TETRAGON_VERSION>-amd64/
    sudo ./install.sh
    ```
 
@@ -136,9 +136,9 @@ sudo rm -fr /etc/tetragon/
 
 ### gRPC API access
 
-{{< note >}}
+:::note
 Tetragon tarball by default listens on `unix:///var/run/tetragon/tetragon.sock`
-{{< /note >}}
+:::
 
 To access the gRPC API with `tetra` client, set `--server-address` to point to the corresponding address:
 
@@ -146,7 +146,7 @@ To access the gRPC API with `tetra` client, set `--server-address` to point to t
    sudo tetra --server-address unix:///var/run/tetragon/tetragon.sock getevents
    ```
 
-See [restrict gRPC API access]({{< ref "/docs/reference/daemon-configuration#restrict-grpc-api-access" >}}) for further details.
+See [restrict gRPC API access](/docs/docs/reference/daemon-configuration#restrict-grpc-api-access) for further details.
 
 ### Tetragon Events
 
@@ -173,6 +173,6 @@ Tetragon also ships a gRPC client that can be used to receive events.
 
 ## What's next
 
-See [Explore security observability events](/docs/concepts/events/)
+See [Explore security observability events](/docs/docs/concepts/events/)
 to learn more about how to see the Tetragon events.
 

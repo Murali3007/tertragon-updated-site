@@ -26,7 +26,7 @@ This answers questions like:
 Before starting, deploy the Demo Application:
 
 ```bash
-kubectl create -f {{< demo-app-url >}}
+kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.15.3/examples/minikube/http-sw-app.yaml
 ```
 
 Verify the pods are running:
@@ -72,11 +72,11 @@ spec:
       type: "int"
 ```
 
-{{< note >}}
+:::note
 The first argument (index 0) is the file descriptor referring to a namespace,
 and the second argument (index 1) is a flag specifying the type of namespace.
 For more details, see the [setns(2) man page](https://man7.org/linux/man-pages/man2/setns.2.html).
-{{< /note >}}
+:::
 
 Apply the TracingPolicy:
 
@@ -105,13 +105,13 @@ Then attempt to enter the host namespaces:
 nsenter -t 1 -m -u -n -i -p
 ```
 
-{{< note >}}
+:::note
 This command attempts to enter the mount (-m), UTS (-u), network (-n), IPC (-i),
 and PID (-p) namespaces of PID 1 (the host's init process). In a properly secured
 container, this command will fail, but Tetragon will still capture the attempt.
-{{< /note >}}
+:::
 
-The `tetra` CLI will generate [ProcessKprobe]({{< ref "/docs/reference/grpc-api#processkprobe" >}})
+The `tetra` CLI will generate [ProcessKprobe](/docs/docs/reference/grpc-api#processkprobe)
 events similar to:
 
 ```json
@@ -205,12 +205,12 @@ events similar to:
 }
 ```
 
-{{< note >}}
+:::note
 The second argument (`int_arg: 134217728`) corresponds to `CLONE_NEWIPC` (`0x08000000`), indicating
 an attempt to enter the IPC namespace. Other common values include `CLONE_NEWNS` (`0x20000`) for
 mount namespace, `CLONE_NEWPID` (`0x20000000`) for PID namespace, and `CLONE_NEWNET` (`0x40000000`)
 for network namespace.
-{{< /note >}}
+:::
 
 ### Enforcement: Blocking Namespace Changes
 
@@ -250,10 +250,10 @@ The `matchPIDs` selector ensures the policy only applies to container processes:
   invalid PIDs, effectively targeting only non-init container processes
 - `followForks: true`: Applies the rule to forked child processes as well
 
-{{< caution >}}
-Please consult the [Enforcement]({{< ref "/docs/concepts/enforcement" >}}) section
+:::caution
+Please consult the [Enforcement](/docs/docs/concepts/enforcement/persistent-enforcement) section
 before using enforcement actions in production environments.
-{{< /caution >}}
+:::
 
 ### Cleanup
 

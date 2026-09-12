@@ -4,8 +4,10 @@ linkTitle: "Runtime Hooks"
 weight: 3
 description: "Configure Runtime Hooks"
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-See [Tetragon Runtime Hooks]({{< ref "/docs/concepts/runtime-hooks" >}}), for an introduction to
+See [Tetragon Runtime Hooks](/docs/docs/concepts/runtime-hooks), for an introduction to
 the topic.
 
 
@@ -16,16 +18,16 @@ same steps can be applied to other platforms.
 
 ### Setup cluster
 
-{{< tabpane text=true >}}
+<Tabs>
 
-{{% tab "minikube with CRI-O" %}}
+<TabItem value="minikube-crio" label="minikube with CRI-O">
 
 ```shell
 minikube start --driver=kvm2 --container-runtime=cri-o
 ```
-{{% /tab %}}
+</TabItem>
 
-{{% tab "minikube with Containerd" %}}
+<TabItem value="minikube-containerd" label="minikube with Containerd">
 
 ```shell
 minikube start --driver=kvm2 --container-runtime=containerd
@@ -57,9 +59,9 @@ You can use the `minikube-install-hook` script to patch the configuration file:
 
 This script updates the configuration and restarts containerd.
 
-{{% /tab %}}
+</TabItem>
 
-{{% tab "kind (with Containerd)" %}}
+<TabItem value="kind-containerd" label="kind (with Containerd)">
 
 Note: Kind [only supports
 containerd](https://kind.sigs.k8s.io/docs/design/principles/#target-cri-functionality)
@@ -109,9 +111,9 @@ you can use the `kind-hook-setup.sh` script to patch the configuration file:
 This script updates the configuration and restarts containerd.
 
 
-{{% /tab %}}
+</TabItem>
 
-{{< /tabpane >}}
+</Tabs>
 
 ### Install Tetragon
 
@@ -120,24 +122,28 @@ helm repo add cilium https://helm.cilium.io
 helm repo update
 ```
 
-{{< tabpane lang=shell >}}
-{{< tab "CRI-O (oci-hooks)" >}}
+<Tabs>
+<TabItem value="cri-o-oci-hooks" label="CRI-O (oci-hooks)">
+```shell
 helm install \
    --namespace kube-system \
    --set rthooks.enabled=true \
    --set rthooks.interface=oci-hooks \
    ${EXTRA_HELM_FLAGS[@]} \
    tetragon cilium/tetragon
-{{< /tab >}}
-{{< tab "Containerd (nri-hook)" >}}
+```
+</TabItem>
+<TabItem value="containerd-nri-hook" label="Containerd (nri-hook)">
+```shell
 helm install \
    --namespace kube-system \
    --set rthooks.enabled=true \
    --set rthooks.interface=nri-hook \
    ${EXTRA_HELM_FLAGS[@]} \
    tetragon cilium/tetragon
-{{< /tab >}}
-{{< /tabpane >}}
+```
+</TabItem>
+</Tabs>
 
 ```shell
 kubectl -n kube-system get pods | grep tetragon
@@ -159,14 +165,14 @@ kubectl run test --image=debian  --rm -it -- /bin/bash
 
 Check logs:
 
-{{< tabpane lang=shell >}}
-{{< tab "minikube" >}}
+<Tabs>
+<TabItem value="minikube" label="minikube">
 minikube ssh 'tail -1 /opt/tetragon/tetragon-oci-hook.log'
-{{< /tab >}}
-{{< tab "kind" >}}
+</TabItem>
+<TabItem value="kind" label="kind">
 docker exec kind-control-plane sh -c 'tail -1 /opt/tetragon/tetragon-oci-hook.log'
-{{< /tab >}}
-{{< /tabpane >}}
+</TabItem>
+</Tabs>
 
 Output:
 ```json
@@ -243,10 +249,10 @@ Patterns perform substring matching by default; use `^` and `$` anchors for full
 - `^foo-.*-bar$` — both prefix and suffix (any namespace starting with `foo-` and ending with `-bar`)
 - `.*` — matches any namespace (disables the hook for all namespaces)
 
-{{< note >}}
+:::note
 Without anchors, a pattern like `acme-` also matches namespaces where `acme-` appears as a
 substring, such as `not-acme-foo`. Use `^` and `$` for precise matching.
-{{< /note >}}
+:::
 
 ```yaml
 rthooks:
@@ -268,8 +274,8 @@ rthooks:
     - "^dev-.*$"
 ```
 
-{{< note >}}
+:::note
 If the pod namespace annotation is missing from the container annotations, the hook
 will always fail the container (safe default). Both options are ignored when
 `extraHookArgs` sets `fail-cel-expr`, which always takes precedence.
-{{< /note >}}
+:::

@@ -11,13 +11,13 @@ description: "Install and manage Tetragon as a container without a Kubernetes cl
 
 To run a stable version, please check [Tetragon quay repository](https://quay.io/cilium/tetragon?tab=tags)
 and select which version you want. For example if you want to run the latest
-version which is `{{< latest-version >}}` currently.
+version which is `<TETRAGON_VERSION>` currently.
 
 ```shell
 docker run --name tetragon --rm -d                   \
     --pid=host --cgroupns=host --privileged          \
     -v /sys/kernel/btf/vmlinux:/var/lib/tetragon/btf \
-    quay.io/cilium/tetragon:{{< latest-version >}}
+    quay.io/cilium/tetragon:<TETRAGON_VERSION>
 ```
 
 ### Unstable-development versions
@@ -34,11 +34,11 @@ docker run --name tetragon --rm -d                  \
    quay.io/cilium/tetragon-ci:latest
 ```
 
-{{< note >}}
+:::note
 If Tetragon does not start due to BTF issues, please refer to the
-[corresponding question in the FAQ]({{< ref "/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file" >}})
+[corresponding question in the FAQ](/docs/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file)
 for details and solutions.
-{{< /note >}}
+:::
 
 ## Configuration
 
@@ -51,11 +51,11 @@ There are multiple ways to set configuration options:
     docker run --name tetragon --rm -d \
         --pid=host --cgroupns=host --privileged \
         -v /sys/kernel:/sys/kernel \
-        quay.io/cilium/tetragon:{{< latest-version >}} \
+        quay.io/cilium/tetragon:<TETRAGON_VERSION> \
         /usr/bin/tetragon --export-filename /var/log/tetragon/tetragon.log
     ```
 
-    For a complete list of CLI arguments, please check [Tetragon daemon configuration]({{< ref "/docs/reference/daemon-configuration" >}}).
+    For a complete list of CLI arguments, please check [Tetragon daemon configuration](/docs/docs/reference/daemon-configuration).
 
 
 2. Environment variables
@@ -65,26 +65,26 @@ There are multiple ways to set configuration options:
         --pid=host --cgroupns=host --privileged \
         --env "TETRAGON_EXPORT_FILENAME=/var/log/tetragon/tetragon.log" \
         -v /sys/kernel:/sys/kernel \
-        quay.io/cilium/tetragon:{{< latest-version >}}
+        quay.io/cilium/tetragon:<TETRAGON_VERSION>
     ```
 
     Every controlling setting can be set using environment variables. Prefix it with the key word `TETRAGON_` then upper case the controlling setting. As an example to set where to export JSON events: `--export-filename` will be `TETRAGON_EXPORT_FILENAME`.
 
-    For a complete list of all controlling settings, please check [tetragon daemon configuration]({{< ref "/docs/reference/daemon-configuration" >}}).
+    For a complete list of all controlling settings, please check [tetragon daemon configuration](/docs/docs/reference/daemon-configuration).
 
 3. Configuration files mounted as volumes
 
-    On the host machine set the configuration drop-ins inside `/etc/tetragon/tetragon.conf.d/` directory according to the [configuration examples]({{< ref "/docs/reference/daemon-configuration#configuration-examples" >}}), then mount it as volume:
+    On the host machine set the configuration drop-ins inside `/etc/tetragon/tetragon.conf.d/` directory according to the [configuration examples](/docs/docs/reference/daemon-configuration#configuration-examples), then mount it as volume:
 
     ```shell
     docker run --name tetragon --rm -d \
         --pid=host --cgroupns=host --privileged \
         -v /sys/kernel:/sys/kernel \
         -v /etc/tetragon/tetragon.conf.d/:/etc/tetragon/tetragon.conf.d/ \
-        quay.io/cilium/tetragon:{{< latest-version >}}
+        quay.io/cilium/tetragon:<TETRAGON_VERSION>
     ```
 
     This will map the `/etc/tetragon/tetragon.conf.d/` drop-in directory from the host into the container.
 
-See [Tetragon daemon configuration]({{< ref "/docs/reference/daemon-configuration" >}}) reference for further details.
+See [Tetragon daemon configuration](/docs/docs/reference/daemon-configuration) reference for further details.
 

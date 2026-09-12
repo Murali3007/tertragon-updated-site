@@ -15,7 +15,9 @@ The following table list all Tetragon daemon available options and is
 automatically generated using the tetragon binary `--generate-docs` flag. The
 same information can also be retrieved using `--help`.
 
-{{< tetragon-options >}}
+import TetragonOptions from '@site/src/components/TetragonOptions';
+
+<TetragonOptions />
 
 ## Configuration precedence
 
@@ -56,7 +58,7 @@ To summarize the configuration precedence:
    - `/usr/local/lib/tetragon/tetragon.conf.d/*`
    - `/usr/lib/tetragon/tetragon.conf.d/*`
 
-{{< note >}}
+:::note
 To clear a controlling setting that was set before, set it again to an empty
 value.
 
@@ -64,7 +66,7 @@ Package managers can customize the configuration by installing drop-ins under
 `/usr/`. Configurations in `/etc/tetragon/` are strictly reserved for the local
 administrator, who may use this logic to override package managers or the
 default installed configuration.
-{{< /note >}}
+:::
 
 ## Configuration examples
 
@@ -99,10 +101,10 @@ Changing configuration example:
    /var/log/tetragon/tetragon.log
    ```
 
-{{< note >}}
+:::note
 Defaults controlling settings can be restored by simply deleting `/etc/tetragon/tetragon.yaml`
 and all drop-ins under `/etc/tetragon/tetragon.conf.d/`
-{{< /note >}}
+:::
 
 ## Restrict gRPC API access
 
@@ -126,20 +128,20 @@ Then to access the gRPC API with `tetra` client, set `--server-address` to point
    sudo tetra --server-address unix:///var/run/tetragon/tetragon.sock getevents
    ```
 
-{{< note >}}
+:::note
 When reading events with the `tetra` client, if `--server-address` is not specified,
 it will try to detect if Tetragon daemon is running on the same host and use its
 `server-address` configuration.
-{{< /note >}}
+:::
 
-{{< caution >}}
+:::caution
 Ensure that you have enough privileges to open the gRPC unix socket since it is restricted to privileged users only.
-{{< /caution >}}
+:::
 
 ## Configure Tracing Policies location
 
-Tetragon daemon automatically loads [Tracing policies](/docs/concepts/tracing-policy) from the default `/etc/tetragon/tetragon.tp.d/` directory. Tracing policies can be organized in directories such: `/etc/tetragon/tetragon.tp.d/file-access`, `/etc/tetragon/tetragon.tp.d/network-access`, etc.
+Tetragon daemon automatically loads [Tracing policies](/docs/docs/concepts/tracing-policy/example) from the default `/etc/tetragon/tetragon.tp.d/` directory. Tracing policies can be organized in directories such: `/etc/tetragon/tetragon.tp.d/file-access`, `/etc/tetragon/tetragon.tp.d/network-access`, etc.
 
-The `--tracing-policy-dir` controlling setting can be used to change the default directory from where [Tracing policies](/docs/concepts/tracing-policy) are loaded.
+The `--tracing-policy-dir` controlling setting can be used to change the default directory from where [Tracing policies](/docs/docs/concepts/tracing-policy/example) are loaded.
 
 The `--tracing-policy` controlling setting can be used to specify the path of one tracing policy to load.

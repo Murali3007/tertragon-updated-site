@@ -14,12 +14,12 @@ repository to release the helm chart.
 To install the latest release of the Tetragon helm chart, use the following
 command.
 
-{{< note >}}
+:::note
 You can find the chart and its documentation with all available values for
 configuration in [install/kubernetes/tetragon](https://github.com/cilium/tetragon/tree/main/install/kubernetes/tetragon)
 in the Tetragon repository. You can use any of the values and override them
 with `--set KEY1=VALUE1,KEY2=VALUE2`.
-{{< /note >}}
+:::
 
 ```shell
 helm repo add cilium https://helm.cilium.io
@@ -32,15 +32,15 @@ To wait until Tetragon deployment is ready, use the following `kubectl` command:
 kubectl rollout status -n kube-system ds/tetragon -w
 ```
 
-{{< note >}}
+:::note
 By default, pods in the kube-system namespace are filtered-out.
-{{< /note >}}
+:::
 
-{{< note >}}
+:::note
 If Tetragon does not to start due to BTF issues, please refer to the
-[corresponding question in the FAQ]({{< ref "/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file" >}})
+[corresponding question in the FAQ](/docs/docs/installation/faq#tetragon-failed-to-start-complaining-about-a-missing-btf-file)
 for details and solutions.
-{{< /note >}}
+:::
 
 ## Configuration
 
@@ -59,7 +59,8 @@ kubectl edit cm tetragon-config -n kube-system
 kubectl rollout restart ds/tetragon -n kube-system
 ```
 
-<details><summary>Requirements for Talos Linux (v1.12.0+)</summary>
+<details>
+<summary>Requirements for Talos Linux (v1.12.0+)</summary>
 
 The following Helm values configuration is required to install Tetragon on Talos Linux:
 

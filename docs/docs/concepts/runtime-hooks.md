@@ -5,7 +5,7 @@ description: "Tetragon Runtime Hooks"
 ---
 
 Applying
-[Kubernetes Identity Aware Policies]({{< ref "/docs/concepts/tracing-policy/k8s-filtering/" >}})
+[Kubernetes Identity Aware Policies](/docs/docs/concepts/tracing-policy/k8s-filtering/)
 requires information about Kubernetes (K8s) pods (e.g., namespaces and labels). Based on this
 information, the Tetragon agent can update the state so that Kubernetes Identify filtering can be
 applied in-kernel via BPF.
@@ -56,4 +56,4 @@ Containerd can be configured to use a custom container spec that includes `tetra
 
 ## Configuration
 
-See [Configure Runtime Hooks]({{< ref "/docs/installation/runtime-hooks.md" >}}).
+See [Configure Runtime Hooks](/docs/docs/installation/runtime-hooks.md).

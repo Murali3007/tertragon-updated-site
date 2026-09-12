@@ -3,6 +3,8 @@ title: "Install tetra CLI"
 weight: 4
 description: "To interact with Tetragon, install the Tetragon client CLI tetra"
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 This guide presents various methods to install `tetra` in your environment.
 
@@ -14,13 +16,13 @@ This shell script autodetects the OS and the architecture, downloads the
 archive of the binary and its SHA 256 digest, compares that the actual digest
 with the supposed one, installs the binary, and removes the download artifacts.
 
-{{< note >}}
+:::note
 This installation method requires a working Go toolchain, `curl(1)`, and the
 `sha256sum(1)` utilities. For Go, see how to [install the latest Go release](https://go.dev/doc/install)
 and for the curl and checksum utility, it is usually distributed in common
 Linux distribution but you can usually find them respectively under the package
 `curl` and `coreutils`.
-{{< /note >}}
+:::
 
 ```shell
 GOOS=$(go env GOOS)
@@ -36,51 +38,51 @@ rm tetra-${GOOS}-${GOARCH}.tar.gz{,.sha256sum}
 This installation method retrieves the adapted archived for your environment,
 extract it and install it in the `/usr/local/bin` directory.
 
-{{< note >}}
+:::note
 This installation method requires only `curl(1)` that should be already
 installed in your environment, otherwise you can usually find it under the
 `curl` package.
-{{< /note >}}
+:::
 
-{{< note >}}
+:::note
 The architecture amd64 is also referred to as x86_64 or Intel, and arm64 is also
 referred to as aarch64 or Apple Silicon for Mac computers.
-{{< /note >}}
+:::
 
-{{< tabpane lang="shell" >}}
+<Tabs>
 
-{{< tab header="Linux amd64" >}}
+<TabItem value="linux-amd64" label="Linux amd64">
 curl -L https://github.com/cilium/tetragon/releases/latest/download/tetra-linux-amd64.tar.gz | tar -xz
 sudo mv tetra /usr/local/bin
-{{< /tab >}}
+</TabItem>
 
-{{< tab header="Linux arm64" >}}
+<TabItem value="linux-arm64" label="Linux arm64">
 curl -L https://github.com/cilium/tetragon/releases/latest/download/tetra-linux-arm64.tar.gz | tar -xz
 sudo mv tetra /usr/local/bin
-{{< /tab >}}
+</TabItem>
 
-{{< tab header="macOS amd64" >}}
+<TabItem value="macos-amd64" label="macOS amd64">
 curl -L https://github.com/cilium/tetragon/releases/latest/download/tetra-darwin-amd64.tar.gz | tar -xz
 sudo mv tetra /usr/local/bin
-{{< /tab >}}
+</TabItem>
 
-{{< tab header="macOS arm64" >}}
+<TabItem value="macos-arm64" label="macOS arm64">
 curl -L https://github.com/cilium/tetragon/releases/latest/download/tetra-darwin-arm64.tar.gz | tar -xz
 sudo mv tetra /usr/local/bin
-{{< /tab >}}
+</TabItem>
 
-{{< tab header="Windows amd64" >}}
+<TabItem value="windows-amd64" label="Windows amd64">
 curl -LO https://github.com/cilium/tetragon/releases/latest/download/tetra-windows-amd64.tar.gz
 tar -xzf tetra-windows-amd64.tar.gz
 # move the binary in a directory in your PATH
-{{< /tab >}}
+</TabItem>
 
-{{< tab header="Windows arm64" >}}
+<TabItem value="windows-arm64" label="Windows arm64">
 curl -LO https://github.com/cilium/tetragon/releases/latest/download/tetra-windows-arm64.tar.gz
 tar -xzf tetra-windows-arm64.tar.gz
 # move the binary in a directory in your PATH
-{{< /tab >}}
-{{< /tabpane >}}
+</TabItem>
+</Tabs>
 
 ### Install using homebrew
 
@@ -107,7 +109,7 @@ tetra \
   getevents
 ```
 
-See [gRPC TLS / mTLS]({{< ref "/docs/installation/grpc-tls" >}}) for the full
+See [gRPC TLS / mTLS](/docs/docs/installation/grpc-tls) for the full
 flag list and provisioning options.
 
 ## Install a specific release

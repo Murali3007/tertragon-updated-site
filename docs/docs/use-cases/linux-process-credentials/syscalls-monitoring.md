@@ -19,7 +19,7 @@ Before going forward, verify that all pods are up and running, ensure you
 deploy our Demo Application to explore the Security Observability Events:
 
 ```bash
-kubectl create -f {{< demo-app-url >}}
+kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.15.3/examples/minikube/http-sw-app.yaml
 ```
 
 It might take several seconds for some pods until they satisfy all the dependencies:

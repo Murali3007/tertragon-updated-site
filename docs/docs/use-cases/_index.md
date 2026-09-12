@@ -7,10 +7,10 @@ description: >
 ---
 
 By default, Tetragon monitors process lifecycle, learn more about that in the
-[dedicated use cases]({{< ref "/docs/use-cases/process-lifecycle/" >}}).
+[dedicated use cases](/docs/docs/use-cases/process-lifecycle/).
 
 For more advanced use cases, Tetragon can observe tracepoints and arbitrary
 kernel calls via kprobes. For that, Tetragon must be extended and configured
-with custom resources objects named [TracingPolicy]({{< ref "/docs/concepts/tracing-policy" >}}).
+with custom resources objects named [TracingPolicy](/docs/docs/concepts/tracing-policy/example).
 It can then generates `process_tracepoint` and `process_kprobes` events.
 
