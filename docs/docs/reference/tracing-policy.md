@@ -1,0 +1,24446 @@
+---
+title: "Tracing Policy"
+description: "This reference documentation is generated from the Tracing Policy CRD specification, detailing its fields and usage."
+weight: 5
+---
+
+A [TracingPolicy](#tracingpolicy) is a user-configurable Kubernetes custom
+resource (CR) that defines how Tetragon observes events in both the kernel
+and userspace using eBPF. It supports a variety of hook points including
+[kprobes](#tracingpolicyspeckprobesindex), [fentry/fexit](#tracingpolicyspecfentriesindex),
+[uprobes](#tracingpolicyspecuprobesindex),
+[tracepoints](#tracingpolicyspectracepointsindex), [LSM hooks](#tracingpolicyspeclsmhooksindex),
+and [USDTs](#tracingpolicyspecusdtsindex), giving users fine-grained control
+over what to trace and what actions to take. Policies consist of hook points,
+selectors for in-kernel filtering, and optional actions that can be executed
+when a match occurs.
+
+Tracing policies can be loaded and unloaded dynamically at runtime or applied
+at startup using configuration flags. Although structured as Kubernetes CRs,
+they can also be used in non-Kubernetes environments via
+[Tetragon’s CLI](https://tetragon.io/docs/installation/tetra-cli/) or
+[daemon flags](https://tetragon.io/docs/reference/daemon-configuration/). In
+Kubernetes, policies can be managed using
+[kubectl](https://kubernetes.io/docs/reference/kubectl/) or tools like
+[Argo CD](https://argo-cd.readthedocs.io/en/stable/).
+
+## Tracing Policy API Reference
+
+Packages:
+
+- [cilium.io/v1alpha1](#ciliumiov1alpha1)
+
+## cilium.io/v1alpha1
+
+Resource Types:
+   
+- [TracingPolicy](#tracingpolicy)   
+- [TracingPolicyNamespaced](#tracingpolicynamespaced)
+
+   
+
+## TracingPolicy
+<sup><sup>[↩ Parent](#ciliumiov1alpha1 )</sup></sup>
+
+
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+      <td><b>apiVersion</b></td>
+      <td>string</td>
+      <td>cilium.io/v1alpha1</td>
+      <td>true</td>
+      </tr>
+      <tr>
+      <td><b>kind</b></td>
+      <td>string</td>
+      <td>TracingPolicy</td>
+      <td>true</td>
+      </tr>
+      <tr>
+      <td><b><a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta">metadata</a></b></td>
+      <td>object</td>
+      <td>Refer to the Kubernetes API documentation for the fields of the `metadata` field.</td>
+      <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspec">spec</a></b></td>
+        <td>object</td>
+        <td>
+          Tracing policy specification.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec
+<sup><sup>[↩ Parent](#tracingpolicy)</sup></sup>
+
+
+Tracing policy specification.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeccontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecenforcersindex">enforcers</a></b></td>
+        <td>[]object</td>
+        <td>
+          A enforcer spec.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindex">fentries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of fentry specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspechostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindex">kprobes</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of kprobe specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclistsindex">lists</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of list specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>loader</b></td>
+        <td>boolean</td>
+        <td>
+          Enable loader events<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindex">lsmhooks</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of uprobe specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecnodeselector">nodeSelector</a></b></td>
+        <td>object</td>
+        <td>
+          NodeSelector selects the nodes, by label, on which Tetragon agents load
+this policy. If empty or unset, the policy is loaded on all nodes. This differs in
+purpose from hostSelector: nodeSelector controls where a policy is loaded
+(on which nodes), whereas hostSelector controls which workloads a loaded
+policy applies to (host vs pod workloads) and does not affect whether the
+policy is loaded on a node. Use nodeSelector to target a node group such
+as GPU nodes, a specific architecture or OS, or a canary pool; use
+hostSelector to scope a loaded policy to host workloads. Unlike
+hostSelector, nodeSelector supports arbitrary matchLabels and
+matchExpressions.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecoptionsindex">options</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of overloaded options<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecpodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskey">selectorsMacros</a></b></td>
+        <td>map[string]object</td>
+        <td>
+          SelectorsMacros is used to define selectors macros, which can be used
+in probes/hooks selectors by their names.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindex">tracepoints</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of tracepoint specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindex">uprobes</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of uprobe specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindex">usdts</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of usdt specs.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeccontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeccontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.enforcers[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>calls</b></td>
+        <td>[]string</td>
+        <td>
+          Calls where enforcer is executed in<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>call</b></td>
+        <td>string</td>
+        <td>
+          Name of the function to apply the kprobe spec to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexdataindex">data</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of data to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexignore">ignore</a></b></td>
+        <td>object</td>
+        <td>
+          Conditions for ignoring this kprobe<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>return</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether to collect return value of the traced function.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexreturnarg">returnArg</a></b></td>
+        <td>object</td>
+        <td>
+          A return argument to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnArgAction</b></td>
+        <td>string</td>
+        <td>
+          An action to perform on the return value.
+Use returnArg to include the return value in the event output.
+Supported actions are: TrackSock;UntrackSock<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed and short-circuited.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>syscall</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether the traced function is a syscall.<br/>
+          <br/>
+            <i>Default</i>: true<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].data[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].ignore
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindex)</sup></sup>
+
+
+Conditions for ignoring this kprobe
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>callNotFound</b></td>
+        <td>boolean</td>
+        <td>
+          Ignores calls that are not present in the system<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].returnArg
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindex)</sup></sup>
+
+
+A return argument to include in the trace output.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecfentriesindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.fentries[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecfentriesindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspechostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspechostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>call</b></td>
+        <td>string</td>
+        <td>
+          Name of the function to apply the kprobe spec to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexdataindex">data</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of data to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexignore">ignore</a></b></td>
+        <td>object</td>
+        <td>
+          Conditions for ignoring this kprobe<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>return</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether to collect return value of the traced function.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexreturnarg">returnArg</a></b></td>
+        <td>object</td>
+        <td>
+          A return argument to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnArgAction</b></td>
+        <td>string</td>
+        <td>
+          An action to perform on the return value.
+Use returnArg to include the return value in the event output.
+Supported actions are: TrackSock;UntrackSock<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed and short-circuited.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>syscall</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether the traced function is a syscall.<br/>
+          <br/>
+            <i>Default</i>: true<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].data[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].ignore
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindex)</sup></sup>
+
+
+Conditions for ignoring this kprobe
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>callNotFound</b></td>
+        <td>boolean</td>
+        <td>
+          Ignores calls that are not present in the system<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].returnArg
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindex)</sup></sup>
+
+
+A return argument to include in the trace output.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeckprobesindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.kprobes[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeckprobesindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lists[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the list<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>pattern</b></td>
+        <td>string</td>
+        <td>
+          Pattern for 'generated' lists.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Indicates the type of the list values.<br/>
+          <br/>
+            <i>Enum</i>: syscalls, generated_syscalls, generated_ftrace<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>validated</b></td>
+        <td>boolean</td>
+        <td>
+          List was validated<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values of the list<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>hook</b></td>
+        <td>string</td>
+        <td>
+          Name of the function to apply the kprobe spec to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.lsmhooks[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspeclsmhooksindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.nodeSelector
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+NodeSelector selects the nodes, by label, on which Tetragon agents load
+this policy. If empty or unset, the policy is loaded on all nodes. This differs in
+purpose from hostSelector: nodeSelector controls where a policy is loaded
+(on which nodes), whereas hostSelector controls which workloads a loaded
+policy applies to (host vs pod workloads) and does not affect whether the
+policy is loaded on a node. Use nodeSelector to target a node group such
+as GPU nodes, a specific architecture or OS, or a canary pool; use
+hostSelector to scope a loaded policy to host workloads. Unlike
+hostSelector, nodeSelector supports arbitrary matchLabels and
+matchExpressions.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecnodeselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.nodeSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecnodeselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.options[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the option<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>value</b></td>
+        <td>string</td>
+        <td>
+          Value of the option<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecpodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecpodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskey)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskeymatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskeymatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskeymatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskeymatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskeymatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecselectorsmacroskeymatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.selectorsMacros[key].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecselectorsmacroskeymatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>event</b></td>
+        <td>string</td>
+        <td>
+          Tracepoint event<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>subsystem</b></td>
+        <td>string</td>
+        <td>
+          Tracepoint subsystem<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>raw</b></td>
+        <td>boolean</td>
+        <td>
+          Enable raw tracepoint arguments<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspectracepointsindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.tracepoints[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspectracepointsindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          Name of the traced binary<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>addrs</b></td>
+        <td>[]integer</td>
+        <td>
+          List of the traced addresses<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>binaryDigests</b></td>
+        <td>[]string</td>
+        <td>
+          BinaryDigests specifies a set of digests for the traced binary.
+The uprobe/hook is installed only if the digest of the traced binary matches a digest in the set.
+Tetragon's tracing policy status API can be used to see each hook's status in order to determine
+if the hook was attached or not.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfPath</b></td>
+        <td>string</td>
+        <td>
+          path for a BTF file for the traced binary<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexdataindex">data</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of data to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexignore">ignore</a></b></td>
+        <td>object</td>
+        <td>
+          Conditions for ignoring this uprobe<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>offsets</b></td>
+        <td>[]integer</td>
+        <td>
+          List of the traced offsets<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>refCtrOffsets</b></td>
+        <td>[]integer</td>
+        <td>
+          List of the traced ref_ctr_offsets<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>return</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether to collect return value of the traced function.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexreturnarg">returnArg</a></b></td>
+        <td>object</td>
+        <td>
+          A return argument to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>symbols</b></td>
+        <td>[]string</td>
+        <td>
+          List of the traced symbols<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].data[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].ignore
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindex)</sup></sup>
+
+
+Conditions for ignoring this uprobe
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>digestVerificationFailure</b></td>
+        <td>boolean</td>
+        <td>
+          Ignores uprobe where the digest verification of the traced binary fails<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].returnArg
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindex)</sup></sup>
+
+
+A return argument to include in the trace output.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecuprobesindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.uprobes[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecuprobesindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index]
+<sup><sup>[↩ Parent](#tracingpolicyspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Usdt name<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          Name of the traced binary<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>provider</b></td>
+        <td>string</td>
+        <td>
+          Usdt provider name<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfPath</b></td>
+        <td>string</td>
+        <td>
+          path for a BTF file for the traced binary<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicyspecusdtsindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicy.spec.usdts[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicyspecusdtsindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>    
+
+## TracingPolicyNamespaced
+<sup><sup>[↩ Parent](#ciliumiov1alpha1 )</sup></sup>
+
+
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+      <td><b>apiVersion</b></td>
+      <td>string</td>
+      <td>cilium.io/v1alpha1</td>
+      <td>true</td>
+      </tr>
+      <tr>
+      <td><b>kind</b></td>
+      <td>string</td>
+      <td>TracingPolicyNamespaced</td>
+      <td>true</td>
+      </tr>
+      <tr>
+      <td><b><a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#objectmeta-v1-meta">metadata</a></b></td>
+      <td>object</td>
+      <td>Refer to the Kubernetes API documentation for the fields of the `metadata` field.</td>
+      <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspec">spec</a></b></td>
+        <td>object</td>
+        <td>
+          Tracing policy specification.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec
+<sup><sup>[↩ Parent](#tracingpolicynamespaced)</sup></sup>
+
+
+Tracing policy specification.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeccontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecenforcersindex">enforcers</a></b></td>
+        <td>[]object</td>
+        <td>
+          A enforcer spec.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindex">fentries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of fentry specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspechostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindex">kprobes</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of kprobe specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclistsindex">lists</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of list specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>loader</b></td>
+        <td>boolean</td>
+        <td>
+          Enable loader events<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindex">lsmhooks</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of uprobe specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecnodeselector">nodeSelector</a></b></td>
+        <td>object</td>
+        <td>
+          NodeSelector selects the nodes, by label, on which Tetragon agents load
+this policy. If empty or unset, the policy is loaded on all nodes. This differs in
+purpose from hostSelector: nodeSelector controls where a policy is loaded
+(on which nodes), whereas hostSelector controls which workloads a loaded
+policy applies to (host vs pod workloads) and does not affect whether the
+policy is loaded on a node. Use nodeSelector to target a node group such
+as GPU nodes, a specific architecture or OS, or a canary pool; use
+hostSelector to scope a loaded policy to host workloads. Unlike
+hostSelector, nodeSelector supports arbitrary matchLabels and
+matchExpressions.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecoptionsindex">options</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of overloaded options<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecpodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskey">selectorsMacros</a></b></td>
+        <td>map[string]object</td>
+        <td>
+          SelectorsMacros is used to define selectors macros, which can be used
+in probes/hooks selectors by their names.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindex">tracepoints</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of tracepoint specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindex">uprobes</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of uprobe specs.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindex">usdts</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of usdt specs.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeccontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeccontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.enforcers[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>calls</b></td>
+        <td>[]string</td>
+        <td>
+          Calls where enforcer is executed in<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>call</b></td>
+        <td>string</td>
+        <td>
+          Name of the function to apply the kprobe spec to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexdataindex">data</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of data to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexignore">ignore</a></b></td>
+        <td>object</td>
+        <td>
+          Conditions for ignoring this kprobe<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>return</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether to collect return value of the traced function.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexreturnarg">returnArg</a></b></td>
+        <td>object</td>
+        <td>
+          A return argument to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnArgAction</b></td>
+        <td>string</td>
+        <td>
+          An action to perform on the return value.
+Use returnArg to include the return value in the event output.
+Supported actions are: TrackSock;UntrackSock<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed and short-circuited.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>syscall</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether the traced function is a syscall.<br/>
+          <br/>
+            <i>Default</i>: true<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].data[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].ignore
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindex)</sup></sup>
+
+
+Conditions for ignoring this kprobe
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>callNotFound</b></td>
+        <td>boolean</td>
+        <td>
+          Ignores calls that are not present in the system<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].returnArg
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindex)</sup></sup>
+
+
+A return argument to include in the trace output.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.fentries[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecfentriesindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspechostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspechostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>call</b></td>
+        <td>string</td>
+        <td>
+          Name of the function to apply the kprobe spec to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexdataindex">data</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of data to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexignore">ignore</a></b></td>
+        <td>object</td>
+        <td>
+          Conditions for ignoring this kprobe<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>return</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether to collect return value of the traced function.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexreturnarg">returnArg</a></b></td>
+        <td>object</td>
+        <td>
+          A return argument to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnArgAction</b></td>
+        <td>string</td>
+        <td>
+          An action to perform on the return value.
+Use returnArg to include the return value in the event output.
+Supported actions are: TrackSock;UntrackSock<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed and short-circuited.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>syscall</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether the traced function is a syscall.<br/>
+          <br/>
+            <i>Default</i>: true<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].data[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].ignore
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindex)</sup></sup>
+
+
+Conditions for ignoring this kprobe
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>callNotFound</b></td>
+        <td>boolean</td>
+        <td>
+          Ignores calls that are not present in the system<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].returnArg
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindex)</sup></sup>
+
+
+A return argument to include in the trace output.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.kprobes[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeckprobesindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lists[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the list<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>pattern</b></td>
+        <td>string</td>
+        <td>
+          Pattern for 'generated' lists.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Indicates the type of the list values.<br/>
+          <br/>
+            <i>Enum</i>: syscalls, generated_syscalls, generated_ftrace<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>validated</b></td>
+        <td>boolean</td>
+        <td>
+          List was validated<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values of the list<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>hook</b></td>
+        <td>string</td>
+        <td>
+          Name of the function to apply the kprobe spec to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.lsmhooks[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspeclsmhooksindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.nodeSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+NodeSelector selects the nodes, by label, on which Tetragon agents load
+this policy. If empty or unset, the policy is loaded on all nodes. This differs in
+purpose from hostSelector: nodeSelector controls where a policy is loaded
+(on which nodes), whereas hostSelector controls which workloads a loaded
+policy applies to (host vs pod workloads) and does not affect whether the
+policy is loaded on a node. Use nodeSelector to target a node group such
+as GPU nodes, a specific architecture or OS, or a canary pool; use
+hostSelector to scope a loaded policy to host workloads. Unlike
+hostSelector, nodeSelector supports arbitrary matchLabels and
+matchExpressions.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecnodeselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.nodeSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecnodeselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.options[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Name of the option<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>value</b></td>
+        <td>string</td>
+        <td>
+          Value of the option<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecpodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecpodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskey)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskeymatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskeymatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskeymatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.selectorsMacros[key].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecselectorsmacroskeymatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>event</b></td>
+        <td>string</td>
+        <td>
+          Tracepoint event<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>subsystem</b></td>
+        <td>string</td>
+        <td>
+          Tracepoint subsystem<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>raw</b></td>
+        <td>boolean</td>
+        <td>
+          Enable raw tracepoint arguments<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.tracepoints[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspectracepointsindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          Name of the traced binary<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>addrs</b></td>
+        <td>[]integer</td>
+        <td>
+          List of the traced addresses<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>binaryDigests</b></td>
+        <td>[]string</td>
+        <td>
+          BinaryDigests specifies a set of digests for the traced binary.
+The uprobe/hook is installed only if the digest of the traced binary matches a digest in the set.
+Tetragon's tracing policy status API can be used to see each hook's status in order to determine
+if the hook was attached or not.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfPath</b></td>
+        <td>string</td>
+        <td>
+          path for a BTF file for the traced binary<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexdataindex">data</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of data to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexignore">ignore</a></b></td>
+        <td>object</td>
+        <td>
+          Conditions for ignoring this uprobe<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>offsets</b></td>
+        <td>[]integer</td>
+        <td>
+          List of the traced offsets<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>refCtrOffsets</b></td>
+        <td>[]integer</td>
+        <td>
+          List of the traced ref_ctr_offsets<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>return</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether to collect return value of the traced function.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexreturnarg">returnArg</a></b></td>
+        <td>object</td>
+        <td>
+          A return argument to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>symbols</b></td>
+        <td>[]string</td>
+        <td>
+          List of the traced symbols<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].data[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].ignore
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindex)</sup></sup>
+
+
+Conditions for ignoring this uprobe
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>digestVerificationFailure</b></td>
+        <td>boolean</td>
+        <td>
+          Ignores uprobe where the digest verification of the traced binary fails<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].returnArg
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindex)</sup></sup>
+
+
+A return argument to include in the trace output.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.uprobes[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecuprobesindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspec)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>name</b></td>
+        <td>string</td>
+        <td>
+          Usdt name<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>path</b></td>
+        <td>string</td>
+        <td>
+          Name of the traced binary<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>provider</b></td>
+        <td>string</td>
+        <td>
+          Usdt provider name<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexargsindex">args</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of function arguments to include in the trace output.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfPath</b></td>
+        <td>string</td>
+        <td>
+          path for a BTF file for the traced binary<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>message</b></td>
+        <td>string</td>
+        <td>
+          A short message of 256 characters max that will be included
+in the event output to inform users what is going on.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindex">selectors</a></b></td>
+        <td>[]object</td>
+        <td>
+          Selectors to apply before producing trace output. Selectors are ORed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>tags</b></td>
+        <td>[]string</td>
+        <td>
+          Tags to categorize the event, will be include in the event output.
+Maximum of 16 Tags are supported.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].args[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Argument type.<br/>
+          <br/>
+            <i>Enum</i>: auto, int, sint8, int8, uint8, sint16, int16, uint16, uint32, sint32, int32, ulong, uint64, size_t, long, sint64, int64, char_buf, char_iovec, skb, sock, sockaddr, socket, sockaddr_un, string, fd, file, filename, path, nop, bpf_attr, perf_event, bpf_map, user_namespace, capability, kiocb, iov_iter, cred, const_buf, load_info, module, syscall64, kernel_cap_t, cap_inheritable, cap_permitted, cap_effective, linux_binprm, data_loc, net_device, bpf_cmd, dentry, bpf_prog<br/>
+            <i>Default</i>: auto<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>btfType</b></td>
+        <td>string</td>
+        <td>
+          Type to use as the initial resolve type. For kprobe args it looks up the named struct
+from the kernel BTF, casting the argument's type before traversing the resolve path.
+For UprobeSpecs and UsdtSpecs it looks up the type from the BTF file defined by BTFPath.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>btfTypeModule</b></td>
+        <td>string</td>
+        <td>
+          Kernel module that contains the BTFType. This is used only for kprobe args.
+The module must already be loaded and expose BTF in /sys/kernel/btf.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Label to output in the JSON<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>maxData</b></td>
+        <td>boolean</td>
+        <td>
+          Read maximum possible data (currently 327360). This field is only used
+for char_buff data. When this value is false (default), the bpf program
+will fetch at most 4096 bytes. In later kernels (>=5.4) tetragon
+supports fetching up to 327360 bytes if this flag is turned on<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>resolve</b></td>
+        <td>string</td>
+        <td>
+          Resolve the path to a specific attribute<br/>
+          <br/>
+            <i>Default</i>: <br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>returnCopy</b></td>
+        <td>boolean</td>
+        <td>
+          This field is used only for char_buf and char_iovec types. It indicates
+that this argument should be read later (when the kretprobe for the
+symbol is triggered) because it might not be populated when the kprobe
+is triggered at the entrance of the function. For example, a buffer
+supplied to read(2) won't have content until kretprobe is triggered.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>sizeArgIndex</b></td>
+        <td>integer</td>
+        <td>
+          Specifies the position of the corresponding size argument for this argument.
+This field is used only for char_buf and char_iovec types.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>source</b></td>
+        <td>string</td>
+        <td>
+          Source of the data, if missing the default if function arguments<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindex)</sup></sup>
+
+
+KProbeSelector selects function calls for kprobe based on PIDs and function arguments. The
+results of MatchPIDs and MatchArgs are ANDed.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>label</b></td>
+        <td>string</td>
+        <td>
+          Human-readable selector label used in status and metrics.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>macros</b></td>
+        <td>[]string</td>
+        <td>
+          A list of macros names, defined in spec.selectorsMacros.
+Filters specified in macros will be appended to corresponding filters of the selector.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchactionsindex">matchActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when this selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchargsindex">matchArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchbinariesindex">matchBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of binary exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchcel">matchCEL</a></b></td>
+        <td>object</td>
+        <td>
+          Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchcapabilitiesindex">matchCapabilities</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of capabilities and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchcapabilitychangesindex">matchCapabilityChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for capabilities changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchcmdargsindex">matchCmdArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of command-line argument filters. MatchCmdArgs are ANDed.
+Indexes are zero-based and exclude argv[0].<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchdataindex">matchData</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchData are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchnamespacechangesindex">matchNamespaceChanges</a></b></td>
+        <td>[]object</td>
+        <td>
+          IDs for namespace changes<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchnamespacesindex">matchNamespaces</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of namespaces and IDs<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchpidsindex">matchPIDs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process ID filters. MatchPIDs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchparentbinariesindex">matchParentBinaries</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of process parent exec name filters.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchreturnactionsindex">matchReturnActions</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of actions to execute when MatchReturnArgs selector matches<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchreturnargsindex">matchReturnArgs</a></b></td>
+        <td>[]object</td>
+        <td>
+          A list of argument filters. MatchReturnArgs are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloads">matchWorkloads</a></b></td>
+        <td>object</td>
+        <td>
+          Workloads to match<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchCEL
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+Match CEL expression. The CEL expression may include:
+ argX (e.g., arg0) where X is the index of the argument in the Args array.
+ dataX where X is the index of the data in the Data array.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>expr</b></td>
+        <td>string</td>
+        <td>
+          <br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchCapabilities[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchCapabilityChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Capabilities to match.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>isNamespaceCapability</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether these caps are namespace caps.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>type</b></td>
+        <td>enum</td>
+        <td>
+          Type of capabilities<br/>
+          <br/>
+            <i>Enum</i>: Effective, Inheritable, Permitted<br/>
+            <i>Default</i>: Effective<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchCmdArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the command-line argument to apply the filter to. Indexes
+are zero-based and exclude argv[0], which is represented by the binary.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+            <i>Maximum</i>: 31<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Values to compare the command-line argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchData[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchNamespaceChanges[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace types (e.g., Mnt, Pid) to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchNamespaces[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>namespace</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector name.<br/>
+          <br/>
+            <i>Enum</i>: Uts, Ipc, Mnt, Pid, PidForChildren, Net, Time, TimeForChildren, Cgroup, User<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Namespace selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Namespace IDs (or host_ns for host namespace) of namespaces to match.<br/>
+        </td>
+        <td>true</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchPIDs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          PID selector operator.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]integer</td>
+        <td>
+          Process IDs to match. Only the first 4 are matched by the kernel.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followForks</b></td>
+        <td>boolean</td>
+        <td>
+          Matches any descendant processes of the matching PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>isNamespacePID</b></td>
+        <td>boolean</td>
+        <td>
+          Indicates whether PIDs are namespace PIDs.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchParentBinaries[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Prefix, NotPrefix, Postfix, NotPostfix<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>followChildren</b></td>
+        <td>boolean</td>
+        <td>
+          In addition to binaries, match children processes of specified binaries.<br/>
+          <br/>
+            <i>Default</i>: false<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchReturnActions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>action</b></td>
+        <td>enum</td>
+        <td>
+          Action to execute.
+The Override action has three variants, depending on what arguments are set
+  1. Override the return value of function
+       Supported hooks: kprobes, uprobes, lsm
+       Arguments: ArgError (return value)
+  2. Override the value of a register
+       Supported hooks: uprobes
+       Arguments: ArgRegs
+  3. Override a function call
+       Supported hooks: uprobes
+       Arguments: One of:
+       - ArgNewSymbol: override call to a new symbol (in the binary)
+	      - ArgNewAddr: override call to a new address (in the binary)
+	      - ArgNewOffset: override call to an offset (in the binary)<br/>
+          <br/>
+            <i>Enum</i>: Post, Sigkill, Override, GetUrl, DnsLookup, NoPost, Signal, TrackSock, UntrackSock, NotifyEnforcer, CleanupEnforcerNotification, Set<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>argError</b></td>
+        <td>integer</td>
+        <td>
+          error value for override action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argFqdn</b></td>
+        <td>string</td>
+        <td>
+          A FQDN to lookup for the dnsLookup action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argIndex</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewAddr</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's address.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewOffset</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol's offset.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+          <br/>
+            <i>Format</i>: int64<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argNewSymbol</b></td>
+        <td>string</td>
+        <td>
+          An arg value for the override action, uprobe only.
+The new symbol name.
+Beware that the symbol MUST be binary compatible with the traced uprobe symbol.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argRegs</b></td>
+        <td>[]string</td>
+        <td>
+          An arg value for the override action, uprobe only.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSig</b></td>
+        <td>integer</td>
+        <td>
+          A signal number for signal action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argSock</b></td>
+        <td>integer</td>
+        <td>
+          An arg index for the sock for trackSock and untrackSock actions<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argUrl</b></td>
+        <td>string</td>
+        <td>
+          A URL for the getUrl action<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>argValue</b></td>
+        <td>integer</td>
+        <td>
+          An arg value for the set action<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>imaHash</b></td>
+        <td>boolean</td>
+        <td>
+          Enable collection of file hashes from integrity subsystem.
+Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>kernelStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable kernel stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimit</b></td>
+        <td>string</td>
+        <td>
+          A time period within which repeated messages will not be posted. Can be
+specified in seconds (default or with 's' suffix), minutes ('m' suffix)
+or hours ('h' suffix). Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>rateLimitScope</b></td>
+        <td>string</td>
+        <td>
+          The scope of the provided rate limit argument. Can be "thread" (default),
+"process" (all threads for the same process), or "global". If "thread" is
+selected then rate limiting applies per thread; if "process" is selected
+then rate limiting applies per process; if "global" is selected then rate
+limiting applies regardless of which process or thread caused the action.
+Only valid with the post action and with a rateLimit specified.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>userStackTrace</b></td>
+        <td>boolean</td>
+        <td>
+          Enable user stack trace export. Only valid with the post action.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchReturnArgs[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          Filter operation.
+
+Note: The CelExpr operator is deprecated and will be removed in Tetragon OSS v1.9.0. Use the MatchCEL selector instead.<br/>
+          <br/>
+            <i>Enum</i>: Equal, NotEqual, Prefix, NotPrefix, Postfix, NotPostfix, GreaterThan, LessThan, GT, LT, Mask, SPort, NotSPort, SPortPriv, NotSportPriv, DPort, NotDPort, DPortPriv, NotDPortPriv, SAddr, NotSAddr, DAddr, NotDAddr, Protocol, Family, State, InMap, NotInMap, CapabilitiesGained, InRange, NotInRange, SubString, SubStringIgnCase, CelExpr, FileType, NotFileType<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>args</b></td>
+        <td>[]integer</td>
+        <td>
+          Position of the operator arguments (in spec file) to apply the filter to.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>index</b></td>
+        <td>integer</td>
+        <td>
+          Position of the argument (in function prototype) to apply the filter to.<br/>
+          <br/>
+            <i>Format</i>: int32<br/>
+            <i>Minimum</i>: 0<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          Value to compare the argument against.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchWorkloads
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindex)</sup></sup>
+
+
+Workloads to match
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadscontainerselector">containerSelector</a></b></td>
+        <td>object</td>
+        <td>
+          ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadshostselector">hostSelector</a></b></td>
+        <td>object</td>
+        <td>
+          HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.<br/>
+          <br/>
+            <i>Validations</i>:<li>!has(self.matchLabels) && !has(self.matchExpressions): The hostSelector should be either null or {}.</li>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadspodselector">podSelector</a></b></td>
+        <td>object</td>
+        <td>
+          PodSelector selects pods that this policy applies to<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchWorkloads.containerSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+ContainerSelector selects containers that this policy applies to.
+A map of container fields will be constructed in the same way as a map of labels.
+The name of the field represents the label "key", and the value of the field - label "value".
+Currently, only the "name" field is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadscontainerselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchWorkloads.containerSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadscontainerselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchWorkloads.hostSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+HostSelector selects hosts that this policy applies to.
+For now only ~ (none) and {} (all) is supported.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadshostselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchWorkloads.hostSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadshostselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchWorkloads.podSelector
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloads)</sup></sup>
+
+
+PodSelector selects pods that this policy applies to
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b><a href="#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadspodselectormatchexpressionsindex">matchExpressions</a></b></td>
+        <td>[]object</td>
+        <td>
+          matchExpressions is a list of label selector requirements. The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>matchLabels</b></td>
+        <td>map[string]string</td>
+        <td>
+          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+map is equivalent to an element of matchExpressions, whose key field is "key", the
+operator is "In", and the values array contains only "value". The requirements are ANDed.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table>
+
+
+### TracingPolicyNamespaced.spec.usdts[index].selectors[index].matchWorkloads.podSelector.matchExpressions[index]
+<sup><sup>[↩ Parent](#tracingpolicynamespacedspecusdtsindexselectorsindexmatchworkloadspodselector)</sup></sup>
+
+
+A label selector requirement is a selector that contains values, a key, and an operator that
+relates the key and values.
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody><tr>
+        <td><b>key</b></td>
+        <td>string</td>
+        <td>
+          key is the label key that the selector applies to.<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>operator</b></td>
+        <td>enum</td>
+        <td>
+          operator represents a key's relationship to a set of values.
+Valid operators are In, NotIn, Exists and DoesNotExist.<br/>
+          <br/>
+            <i>Enum</i>: In, NotIn, Exists, DoesNotExist<br/>
+        </td>
+        <td>true</td>
+      </tr><tr>
+        <td><b>values</b></td>
+        <td>[]string</td>
+        <td>
+          values is an array of string values. If the operator is In or NotIn,
+the values array must be non-empty. If the operator is Exists or DoesNotExist,
+the values array must be empty. This array is replaced during a strategic
+merge patch.<br/>
+        </td>
+        <td>false</td>
+      </tr></tbody>
+</table> 
